@@ -38,7 +38,7 @@ class MultiApp:
                     4: "https://soundcloud.com/xzammopcelmf/sbu4e1m2v1mt?utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing",
                 }
                 i = random.randint(1, len(music))
-                st_player(music[4], playing=True, loop=True, volume=0.3, height=220)
+                st_player(music[4], playing=True, loop=True, volume=0.3, height=250)
         except:
             pass
 
