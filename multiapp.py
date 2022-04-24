@@ -27,7 +27,7 @@ class MultiApp:
         })
 
     def run(self):
-        st.set_page_config(page_title="APP樣板", page_icon="🏠")
+        st.set_page_config(page_title="請支援收銀~", page_icon="🏠")
 
         try:
             with st.sidebar:
@@ -38,16 +38,19 @@ class MultiApp:
                     4: "https://soundcloud.com/xzammopcelmf/sbu4e1m2v1mt?utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing",
                 }
                 i = random.randint(1, len(music))
-                st_player(music[4], playing=True, loop=True, volume=0.3, height=250)
+                st_player(music[4], playing=False, loop=True, volume=0.3, height=250, light=True)
         except:
             pass
 
-        st.sidebar.title("👨‍🏫 [Jack.Pan's](https://www.facebook.com/jack.pan.96/) APP開發樣板 ")
+        st.sidebar.title("👨‍🏫 [Jack.Pan's](https://www.facebook.com/jack.pan.96/) 離散事件模擬")
+
         st.sidebar.header('🧭 功能導航')
         app = st.sidebar.selectbox(
             '應用選單',
             self.apps,
             format_func=lambda app: app['title'],
             index=0)
+
+        st.sidebar.write('- ✉️ ssp6258@yahoo.com.tw')
 
         app['function']()
