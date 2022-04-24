@@ -183,7 +183,7 @@ def fn_sim_fr_st():
             st.write(f'模擬時間: {t2-t1}')
 
             st.write('')
-            st.write('先來首熟悉的旋律 🎵~ ')
+            st.write('熟悉的旋律 🎵~ ')
             st_player(MUSIC, key=str(datetime.datetime.now()), playing=submitted, loop=True, volume=0.3, height=250)
 
             # pprint.pprint(dic_sim_cfg)
@@ -212,12 +212,11 @@ def fn_sim_result_render():
     df['arrival_time'] = fn_2_timestamp(df['arrival'].tolist())
 
     fig = make_subplots(rows=2, cols=1, subplot_titles=('顧客人數分布', '排隊人數模擬'))
-    # fig = make_subplots(rows=3, cols=1, subplot_titles=('顧客人數', '隊伍長度', '等待時間'))
     margin = {'l': 0, 'r': 60, 't': 20, 'b': 0}
 
-    fig = fn_gen_plotly_hist(fig, df['arrival_time'], '顧客', row=1, col=1, bins=df.shape[0], margin=margin)
     x = df['arrival_time']
     y = df['queue']
+    fig = fn_gen_plotly_hist(fig, x, '顧客', row=1, col=1, bins=df.shape[0], margin=margin)
     fig = fn_gen_plotly_scatter(fig, x, y, margin=margin, color='green', size=10, row=2, opacity=0.5, mode='markers')
     fig = fn_gen_plotly_scatter(fig, x, y, margin=margin, color='red', size=10, row=2, opacity=0.5, line_shape='hv',
                             mode='lines')
