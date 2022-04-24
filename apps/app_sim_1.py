@@ -38,6 +38,7 @@ dic_sim_cfg = {
 # SIM_TIME = ARRIVAL_TIMES[-1] + 60
 
 ARRIVAL_TIMES = 0
+ARRIVAL_TIMES_CPY = 0
 SIM_TIME = 0
 
 
@@ -124,7 +125,7 @@ def fn_sim_init():
     print(f'fn_sim_init {len(ARRIVAL_TIMES)} {SIM_TIME}')
 
 
-def fn_customer(env, res, log=True):
+def fn_sim_customer(env, res, log=True):
     custom = 0
     for t in ARRIVAL_TIMES:
         custom += 1
@@ -136,7 +137,7 @@ def fn_customer(env, res, log=True):
         dic_record['custom_id'].append(custom)
 
 
-def fn_cashier(env, res, log=True):
+def fn_sim_cashier(env, res, log=True):
     while True:
         if len(ARRIVAL_TIMES_CPY):
             dic_record['wait_time'].append(max(0, env.now - ARRIVAL_TIMES_CPY[0]))
@@ -151,9 +152,9 @@ def fn_cashier(env, res, log=True):
 def fn_sim_main(log=True):
     env = simpy.Environment()
     res = simpy.Container(env)
-    env.process(fn_customer(env, res, log))
+    env.process(fn_sim_customer(env, res, log))
     for c in range(dic_sim_cfg['CASHIER_NUM']):
-        env.process(fn_cashier(env, res, log))
+        env.process(fn_sim_cashier(env, res, log))
 
     env.run(until=SIM_TIME)
 
