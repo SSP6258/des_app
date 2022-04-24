@@ -57,7 +57,7 @@ dic_record = {
 
 
 def fn_gen_plotly_hist(fig, data, title, row=1, col=1, margin=None, bins=100, line_color='white', showlegend=False,
-                       hovertext=None, barmode='group', opacity=0.8):
+                       hovertext=None, barmode='group', opacity=0.8, xaxis_range=None):
     fig.add_trace(
         go.Histogram(x=data, name=title, showlegend=showlegend, nbinsx=bins, hovertext=hovertext,
                      marker=dict(
@@ -71,23 +71,15 @@ def fn_gen_plotly_hist(fig, data, title, row=1, col=1, margin=None, bins=100, li
     )
 
     fig.update_layout(margin=margin,
-                      barmode=barmode)
+                      barmode=barmode,
+                      xaxis_range=xaxis_range)
 
     return fig
 
 
 def fn_gen_plotly_scatter(fig, x_data, y_data, row=1, col=1, margin=None, color=None, text=None, opacity=0.8,
                           xlabel=None, ylabel=None, title=None, size=None, marker_sym=None,
-                          legend=False, name=None, line_shape=None, mode=None):
-    # fig.add_trace(go.Scatter(x=x_data, y=y_data, line_shape='hv', mode='markers', showlegend=legend, hovertext=text,
-    #                          marker_symbol=marker_sym, name=name,
-    #                          marker=dict(
-    #                              size=size,
-    #                              opacity=opacity,
-    #                              line={'color': 'white', 'width': 0.4},
-    #                              color=color,
-    #                              colorscale='Bluered')  # "Viridis" portland Bluered
-    #                          ), row=row, col=col)
+                          legend=False, name=None, line_shape=None, mode=None, xaxis_range=None):
 
     fig.add_trace(go.Scatter(x=x_data, y=y_data, line_shape=line_shape, mode=mode, showlegend=legend,
                              marker=dict(size=size,
@@ -96,7 +88,7 @@ def fn_gen_plotly_scatter(fig, x_data, y_data, row=1, col=1, margin=None, color=
                                          color=color)
                              ), row=row, col=col)
 
-    fig.update_layout(margin=margin)
+    fig.update_layout(margin=margin, xaxis_range=xaxis_range)
 
     return fig
 
@@ -212,12 +204,13 @@ def fn_sim_result_render():
     margin = {'l': 0, 'r': 40, 't': 20, 'b': 0}
 
     x = df['arrival_time']
-    fig = fn_gen_plotly_hist(fig, x, '顧客', row=1, col=1, bins=df.shape[0], margin=margin)
+    xaxis_range = [df_all['tick_time'].min(), df_all['tick_time'].max()]
+    fig = fn_gen_plotly_hist(fig, x, '顧客', row=1, col=1, bins=df.shape[0], margin=margin, xaxis_range=xaxis_range)
     x = df_all['tick_time']
     y = df_all['queue']
-    fig = fn_gen_plotly_scatter(fig, x, y, margin=margin, color='green', size=10, row=2, opacity=0.5, mode='markers')
+    fig = fn_gen_plotly_scatter(fig, x, y, margin=margin, color='green', size=10, row=2, opacity=0.5, mode='markers', xaxis_range=xaxis_range)
     fig = fn_gen_plotly_scatter(fig, x, y, margin=margin, color='red', size=10, row=2, opacity=0.5, line_shape='hv',
-                                mode='lines')
+                                mode='lines', xaxis_range=xaxis_range)
 
     st.write('')
     st.plotly_chart(fig)
