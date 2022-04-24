@@ -17,7 +17,7 @@ Simulation Env Config
 
 CASHIER_TIME = 6
 CASHIER_NUM = 2
-CUSTOMER_NUM = 10
+CUSTOMER_NUM = 50
 PEAK_ARRIVAL_CLOCK = 12
 ARRIVAL_DURATION = 1
 # ============================
@@ -181,7 +181,6 @@ def fn_sim_fr_st():
             t2 = datetime.datetime.now()
             st.write(f'模擬時間: {t2-t1}')
 
-
             # pprint.pprint(dic_sim_cfg)
             fn_sim_result_render()
 
@@ -208,7 +207,7 @@ def fn_sim_result_render():
 
     df['arrival_time'] = fn_2_timestamp(df['arrival'].tolist())
 
-    fig = make_subplots(rows=2, cols=1, subplot_titles=('顧客人數分布', '隊伍長度模擬'))
+    fig = make_subplots(rows=2, cols=1, subplot_titles=('顧客人數分布', '排隊人數模擬'))
     # fig = make_subplots(rows=3, cols=1, subplot_titles=('顧客人數', '隊伍長度', '等待時間'))
     margin = {'l': 0, 'r': 60, 't': 20, 'b': 0}
 
