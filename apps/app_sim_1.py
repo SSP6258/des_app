@@ -37,10 +37,9 @@ dic_sim_cfg = {
 # ARRIVAL_TIMES_CPY = ARRIVAL_TIMES.copy()
 # SIM_TIME = ARRIVAL_TIMES[-1] + 60
 
-ARRIVAL_TIMES = 0
-ARRIVAL_TIMES_CPY = 0
+ARRIVAL_TIMES = [0]
+ARRIVAL_TIMES_CPY = [0]
 SIM_TIME = 0
-
 
 MUSIC = "https://soundcloud.com/xzammopcelmf/sbu4e1m2v1mt?utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing"
 
@@ -55,7 +54,6 @@ dic_record = {
     'wait_time': [],
     'done_time': [],
 }
-
 
 
 def fn_gen_plotly_hist(fig, data, title, row=1, col=1, margin=None, bins=100, line_color='white', showlegend=False,
@@ -81,7 +79,6 @@ def fn_gen_plotly_hist(fig, data, title, row=1, col=1, margin=None, bins=100, li
 def fn_gen_plotly_scatter(fig, x_data, y_data, row=1, col=1, margin=None, color=None, text=None, opacity=0.8,
                           xlabel=None, ylabel=None, title=None, size=None, marker_sym=None,
                           legend=False, name=None, line_shape=None, mode=None):
-
     # fig.add_trace(go.Scatter(x=x_data, y=y_data, line_shape='hv', mode='markers', showlegend=legend, hovertext=text,
     #                          marker_symbol=marker_sym, name=name,
     #                          marker=dict(
@@ -105,7 +102,7 @@ def fn_gen_plotly_scatter(fig, x_data, y_data, row=1, col=1, margin=None, color=
 
 
 def fn_2_timestamp(values):
-    time_stamp = [datetime.datetime.utcfromtimestamp(t*60) for t in values]
+    time_stamp = [datetime.datetime.utcfromtimestamp(t * 60) for t in values]
     return time_stamp
 
 
@@ -181,7 +178,7 @@ def fn_sim_fr_st():
             t1 = datetime.datetime.now()
             fn_sim_main(log=False)
             t2 = datetime.datetime.now()
-            st.write(f'模擬時間: {t2-t1}')
+            st.write(f'模擬時間: {t2 - t1}')
 
             st.write('')
             st.write('先來首 熟悉的旋律吧 🎵~ ')
@@ -189,8 +186,6 @@ def fn_sim_fr_st():
 
             # pprint.pprint(dic_sim_cfg)
             fn_sim_result_render()
-
-
 
 
 def fn_sim_result_render():
@@ -214,7 +209,7 @@ def fn_sim_result_render():
     df_all['tick_time'] = fn_2_timestamp(df_all['time'].tolist())
 
     fig = make_subplots(rows=2, cols=1, subplot_titles=('顧客人數分布', '排隊人數模擬'))
-    margin = {'l': 0, 'r': 60, 't': 20, 'b': 0}
+    margin = {'l': 0, 'r': 40, 't': 20, 'b': 0}
 
     x = df['arrival_time']
     fig = fn_gen_plotly_hist(fig, x, '顧客', row=1, col=1, bins=df.shape[0], margin=margin)
@@ -222,9 +217,7 @@ def fn_sim_result_render():
     y = df_all['queue']
     fig = fn_gen_plotly_scatter(fig, x, y, margin=margin, color='green', size=10, row=2, opacity=0.5, mode='markers')
     fig = fn_gen_plotly_scatter(fig, x, y, margin=margin, color='red', size=10, row=2, opacity=0.5, line_shape='hv',
-                            mode='lines')
-
-    # fig = fn_gen_plotly_scatter(fig, x, y, margin=margin, color='royalblue', row=3, opacity=1, line_shape='vh')
+                                mode='lines')
 
     st.write('')
     st.plotly_chart(fig)
@@ -234,8 +227,6 @@ def fn_sim_result_render():
         st.write(dic_sim_cfg)
         st.write('')
         AgGrid(df_all, theme='blue')
-
-
 
 
 def app():
