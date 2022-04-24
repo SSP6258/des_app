@@ -182,7 +182,7 @@ def fn_sim_fr_st():
             st.write(f'模擬時間: {t2-t1}')
 
             st.write('')
-            st.write('先來首熟悉的旋律 🎵~')
+            st.write('先來首熟悉的旋律 🎵~ ')
             st_player(MUSIC, key=str(datetime.datetime.now()), playing=submitted, loop=True, volume=0.3, height=250)
 
             # pprint.pprint(dic_sim_cfg)
