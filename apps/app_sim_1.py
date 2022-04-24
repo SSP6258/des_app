@@ -181,11 +181,13 @@ def fn_sim_fr_st():
             t2 = datetime.datetime.now()
             st.write(f'模擬時間: {t2-t1}')
 
+            st.write('')
+            st_player(MUSIC, key=str(datetime.datetime.now()), playing=submitted, loop=True, volume=0.3, height=250)
+
             # pprint.pprint(dic_sim_cfg)
             fn_sim_result_render()
 
-            st.write('')
-            st_player(MUSIC, key=str(datetime.datetime.now()), playing=submitted, loop=True, volume=0.3, height=250)
+
 
 
 def fn_sim_result_render():
