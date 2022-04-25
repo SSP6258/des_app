@@ -202,7 +202,7 @@ def fn_sim_result_render():
     df_all['tick_time'] = fn_2_timestamp(df_all['time'].tolist())
 
     fig = make_subplots(rows=2, cols=1, subplot_titles=('顧客人數分布', '排隊人數模擬'))
-    margin = {'l': 0, 'r': 40, 't': 20, 'b': 0}
+    margin = {'l': 0, 'r': 30, 't': 20, 'b': 0}
 
     x0 = df['arrival_time']
     xaxis_range = [df_all['tick_time'].min(), df_all['tick_time'].max()]
