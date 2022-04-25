@@ -82,6 +82,7 @@ def fn_gen_plotly_scatter(fig, x_data, y_data, row=1, col=1, margin=None, color=
                           legend=False, name=None, line_shape=None, mode=None, xaxis_range=None):
 
     fig.add_trace(go.Scatter(x=x_data, y=y_data, line_shape=line_shape, mode=mode, showlegend=legend,
+                             marker_symbol=marker_sym,
                              marker=dict(size=size,
                                          opacity=opacity,
                                          line={'color': 'white', 'width': 1},
@@ -173,7 +174,7 @@ def fn_sim_fr_st():
             st.write(f'模擬時間: {t2 - t1}')
 
             st.write('')
-            st.write('先來首 熟悉的旋律吧 🎵~ ')
+            st.write('歡迎光臨 全聯福利中心 🎵~ ')
             st_player(MUSIC, key=str(datetime.datetime.now()), playing=submitted, loop=True, volume=0.3, height=250)
 
             # pprint.pprint(dic_sim_cfg)
@@ -203,13 +204,23 @@ def fn_sim_result_render():
     fig = make_subplots(rows=2, cols=1, subplot_titles=('顧客人數分布', '排隊人數模擬'))
     margin = {'l': 0, 'r': 40, 't': 20, 'b': 0}
 
-    x = df['arrival_time']
+    x0 = df['arrival_time']
     xaxis_range = [df_all['tick_time'].min(), df_all['tick_time'].max()]
-    fig = fn_gen_plotly_hist(fig, x, '顧客', row=1, col=1, bins=df.shape[0], margin=margin, xaxis_range=xaxis_range)
-    x = df_all['tick_time']
-    y = df_all['queue']
-    fig = fn_gen_plotly_scatter(fig, x, y, margin=margin, color='green', size=10, row=2, opacity=0.5, mode='markers', xaxis_range=xaxis_range)
-    fig = fn_gen_plotly_scatter(fig, x, y, margin=margin, color='red', size=10, row=2, opacity=0.5, line_shape='hv',
+    fig = fn_gen_plotly_hist(fig, x0, '顧客', row=1, col=1, bins=df.shape[0], margin=margin, xaxis_range=xaxis_range)
+
+    x1 = df_all['tick_time']
+    y1 = df_all['queue']
+    # fig = fn_gen_plotly_scatter(fig, x1, y1, margin=margin, color='green', size=10, row=2, opacity=0.5, mode='markers',
+    #                             xaxis_range=xaxis_range)
+
+    fig = fn_gen_plotly_scatter(fig, x0, [1 for _ in x0], margin=margin, color='blue', size=12, marker_sym=6, row=2,
+                                opacity=0.6, mode='markers', xaxis_range=xaxis_range)
+
+    x2 = fn_2_timestamp([t+dic_sim_cfg['CASHIER_TIME'] for t in df['done_time'].values])
+    fig = fn_gen_plotly_scatter(fig, x2, [0 for _ in x2], margin=margin, color='green', size=12, marker_sym=5, row=2,
+                                opacity=0.6, mode='markers', xaxis_range=xaxis_range)
+
+    fig = fn_gen_plotly_scatter(fig, x1, y1, margin=margin, color='red', size=10, row=2, opacity=0.5, line_shape='hv',
                                 mode='lines', xaxis_range=xaxis_range)
 
     st.write('')
