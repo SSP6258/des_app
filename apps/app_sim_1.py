@@ -210,9 +210,6 @@ def fn_sim_result_render():
 
     x1 = df_all['tick_time']
     y1 = df_all['queue']
-    # fig = fn_gen_plotly_scatter(fig, x1, y1, margin=margin, color='green', size=10, row=2, opacity=0.5, mode='markers',
-    #                             xaxis_range=xaxis_range)
-
     fig = fn_gen_plotly_scatter(fig, x0, [1 for _ in x0], margin=margin, color='blue', size=12, marker_sym=6, row=2,
                                 opacity=0.6, mode='markers', xaxis_range=xaxis_range)
 
