@@ -82,7 +82,7 @@ def fn_gen_plotly_scatter(fig, x_data, y_data, row=1, col=1, margin=None, color=
                           legend=False, name=None, line_shape=None, mode=None, xaxis_range=None):
 
     fig.add_trace(go.Scatter(x=x_data, y=y_data, line_shape=line_shape, mode=mode, showlegend=legend,
-                             marker_symbol=marker_sym,
+                             marker_symbol=marker_sym, name=name,
                              marker=dict(size=size,
                                          opacity=opacity,
                                          line={'color': 'white', 'width': 1},
@@ -206,19 +206,19 @@ def fn_sim_result_render():
 
     x0 = df['arrival_time']
     xaxis_range = [df_all['tick_time'].min(), df_all['tick_time'].max()]
-    fig = fn_gen_plotly_hist(fig, x0, '顧客', row=1, col=1, bins=df.shape[0], margin=margin, xaxis_range=xaxis_range)
+    fig = fn_gen_plotly_hist(fig, x0, '顧客分布', row=1, col=1, bins=df.shape[0], margin=margin, xaxis_range=xaxis_range, showlegend=True)
 
     x1 = df_all['tick_time']
     y1 = df_all['queue']
-    fig = fn_gen_plotly_scatter(fig, x0, [1 for _ in x0], margin=margin, color='blue', size=13, marker_sym=6, row=2,
-                                opacity=0.5, mode='markers', xaxis_range=xaxis_range)
+    fig = fn_gen_plotly_scatter(fig, x0, [1 for _ in x0], margin=margin, color='orange', size=13, marker_sym=6, row=2,
+                                opacity=0.5, mode='markers', xaxis_range=xaxis_range, name='顧客抵達', legend=True)
 
     x2 = fn_2_timestamp([t+dic_sim_cfg['CASHIER_TIME'] for t in df['done_time'].values])
     fig = fn_gen_plotly_scatter(fig, x2, [0 for _ in x2], margin=margin, color='green', size=13, marker_sym=5, row=2,
-                                opacity=0.5, mode='markers', xaxis_range=xaxis_range)
+                                opacity=0.5, mode='markers', xaxis_range=xaxis_range, name='顧客離開', legend=True)
 
     fig = fn_gen_plotly_scatter(fig, x1, y1, margin=margin, color='red', size=10, row=2, opacity=0.5, line_shape='hv',
-                                mode='lines', xaxis_range=xaxis_range)
+                                mode='lines', xaxis_range=xaxis_range, name='排隊人數', legend=True)
 
     st.write('')
     st.plotly_chart(fig)
