@@ -210,11 +210,11 @@ def fn_sim_result_render():
 
     x1 = df_all['tick_time']
     y1 = df_all['queue']
-    fig = fn_gen_plotly_scatter(fig, x0, [1 for _ in x0], margin=margin, color='royalblue', size=13, marker_sym=6, row=2,
+    fig = fn_gen_plotly_scatter(fig, x0, [1 for _ in x0], margin=margin, color='royalblue', size=15, marker_sym=6, row=2,
                                 opacity=0.5, mode='markers', xaxis_range=xaxis_range, name='顧客抵達', legend=True)
 
     x2 = fn_2_timestamp([t+dic_sim_cfg['CASHIER_TIME'] for t in df['done_time'].values])
-    fig = fn_gen_plotly_scatter(fig, x2, [0 for _ in x2], margin=margin, color='green', size=13, marker_sym=5, row=2,
+    fig = fn_gen_plotly_scatter(fig, x2, [0 for _ in x2], margin=margin, color='green', size=15, marker_sym=5, row=2,
                                 opacity=0.5, mode='markers', xaxis_range=xaxis_range, name='顧客離開', legend=True)
 
     fig = fn_gen_plotly_scatter(fig, x1, y1, margin=margin, color='red', size=10, row=2, opacity=0.5, line_shape='hv',
