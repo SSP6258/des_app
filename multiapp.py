@@ -27,7 +27,7 @@ class MultiApp:
         })
 
     def run(self):
-        st.set_page_config(page_title="請支援收銀~", page_icon="🛒 ")
+        st.set_page_config(page_title="請支援收銀~", page_icon="🛒")
 
         try:
             with st.sidebar:
@@ -51,7 +51,7 @@ class MultiApp:
             format_func=lambda app: app['title'],
             index=0)
 
-        st.sidebar.write('- ✉️ ssp6258@yahoo.com.tw')
-        st.sidebar.write('- 🚧️  [故障報修、意見反饋](https://github.com/SSP6258/des_app/issues)')
+        st.sidebar.write('- ✉️ssp6258@yahoo.com.tw')
+        st.sidebar.write('- 🚧️ [故障報修、意見反饋](https://github.com/SSP6258/des_app/issues)')
 
         app['function']()
