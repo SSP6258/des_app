@@ -155,8 +155,8 @@ def fn_sim_main(log=True):
 
 def fn_sim_fr_st():
     st.title('離散事件模擬器')
-    st.subheader('應用: 請支援收銀~')
-    st.subheader('場景: 全聯福利中心 何時需要廣播 "請支援收銀~" ?')
+    st.subheader('🛒 應用: 請支援收銀~ ')
+    st.subheader('🔊 場景: 全聯福利中心 何時需要廣播 "請支援收銀~" ?')
     global dic_sim_cfg
 
     with st.form(key='sale1'):
