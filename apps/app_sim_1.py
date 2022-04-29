@@ -40,6 +40,7 @@ dic_sim_cfg = {
 ARRIVAL_TIMES = [0]
 ARRIVAL_TIMES_CPY = [0]
 SIM_TIME = 0
+SIM_EXTEND_TIME = 120
 
 MUSIC = "https://soundcloud.com/xzammopcelmf/sbu4e1m2v1mt?utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing"
 
@@ -113,9 +114,13 @@ def fn_gen_gannt_chart(df, x_s, x_e, y, margin=None, color=None, op=None, title=
     return fig
 
 
-
 def fn_2_timestamp(values):
-    time_stamp = [datetime.datetime.utcfromtimestamp(t * 60) for t in values]
+    try:
+        time_stamp = [datetime.datetime.utcfromtimestamp(t * 60) for t in values]
+    except:
+        print(values)
+        time_stamp = [datetime.datetime.utcfromtimestamp(t * 60) for t in values]
+
     return time_stamp
 
 
@@ -129,7 +134,7 @@ def fn_sim_init():
     ARRIVAL_TIMES = [int(random.gauss(mu, sig)) for _ in range(dic_sim_cfg['CUSTOMER_NUM'])]
     ARRIVAL_TIMES.sort()
     ARRIVAL_TIMES_CPY = ARRIVAL_TIMES.copy()
-    SIM_TIME = ARRIVAL_TIMES[-1] + 60
+    SIM_TIME = ARRIVAL_TIMES[-1] + SIM_EXTEND_TIME
     dic_record['arrival'] = ARRIVAL_TIMES
 
     print(f'fn_sim_init {len(ARRIVAL_TIMES)} {SIM_TIME}')
@@ -223,6 +228,8 @@ def fn_sim_result_render():
     df['arrival'] = df['arrival'].fillna(-1)
     df['arrival'] = df['arrival'].astype(int)
     df = df[df['arrival'] > 0]
+
+    print(df)
 
     df['arrival_time'] = fn_2_timestamp(df['arrival'].tolist())
     df_all['tick_time'] = fn_2_timestamp(df_all['time'].tolist())
