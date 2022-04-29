@@ -111,7 +111,7 @@ def fn_gen_plotly_gannt(df, x_s, x_e, y, margin=None, color=None, op=None, title
                           'yanchor': 'top'
                       },
                       xaxis=dict(
-                          title="等待時間(分)"
+                          title="時間(分)"
                       ),
                       yaxis=dict(
                           title="顧客"
@@ -230,7 +230,8 @@ def fn_sim_fr_st():
             t1 = datetime.datetime.now()
             fn_sim_main(log=False)
             t2 = datetime.datetime.now()
-            st.write(f'模擬時間: {t2 - t1}')
+            du = t2 - t1
+            st.write(f'模擬時間: {du.microseconds} 微秒(us)')
 
             st.write('')
             st.write('歡迎光臨 全聯福利中心 🎵~ ')
@@ -283,7 +284,7 @@ def fn_sim_result_render():
     df_gannt = df.copy()
     df_gannt['done_time_tick'] = fn_2_timestamp(df_gannt['done_time'].values)
     df_gannt['duration'] = fn_2_timestamp(df_gannt['wait_time'].values)
-    fig_gannt = fn_gen_plotly_gannt(df_gannt, 'arrival_time', 'done_time_tick', 'custom_id', margin=None, color='wait_time', op=0.8, title='顧客等待時間', hover=['wait_time'])
+    fig_gannt = fn_gen_plotly_gannt(df_gannt, 'arrival_time', 'done_time_tick', 'custom_id', margin=None, color='wait_time', op=0.8, title='顧客排隊時間', hover=['wait_time'])
 
     fig_box = fn_gen_plotly_box(df_gannt, 'wait_time', title='等待時間分布', x_title=f'條件: {dic_sim_cfg["CUSTOMER_NUM"]}位顧客,'
                                                                                f' {dic_sim_cfg["CASHIER_NUM"]}位收銀員, '
