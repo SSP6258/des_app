@@ -111,7 +111,7 @@ def fn_gen_plotly_gannt(df, x_s, x_e, y, margin=None, color=None, op=None, title
                           'yanchor': 'top'
                       },
                       xaxis=dict(
-                          title="時間(分)"
+                          title="時間"
                       ),
                       yaxis=dict(
                           title="顧客"
