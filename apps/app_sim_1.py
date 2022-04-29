@@ -95,7 +95,7 @@ def fn_gen_plotly_scatter(fig, x_data, y_data, row=1, col=1, margin=None, color=
     return fig
 
 
-def fn_gen_gannt_chart(df, x_s, x_e, y, margin=None, color=None, op=None, title=None, hover=None):
+def fn_gen_plotly_gannt(df, x_s, x_e, y, margin=None, color=None, op=None, title=None, hover=None):
 
     margin = {'l': 0, 'r': 100, 't': 30, 'b': 20} if margin is None else margin
     fig = px.timeline(df, x_start=x_s, x_end=x_e, y=y, color=color,
@@ -109,7 +109,21 @@ def fn_gen_gannt_chart(df, x_s, x_e, y, margin=None, color=None, op=None, title=
                           'x': 0.5,
                           'xanchor': 'center',
                           'yanchor': 'top'
-                      }, )
+                      },
+                      xaxis=dict(
+                          title="等待時間(分)"
+                      ),
+                      yaxis=dict(
+                          title="顧客"
+                      )
+                      )
+
+    return fig
+
+
+def fn_gen_plotly_box(df, col):
+
+    fig = px.box(df, y=col)
 
     return fig
 
@@ -229,8 +243,6 @@ def fn_sim_result_render():
     df['arrival'] = df['arrival'].astype(int)
     df = df[df['arrival'] > 0]
 
-    print(df)
-
     df['arrival_time'] = fn_2_timestamp(df['arrival'].tolist())
     df_all['tick_time'] = fn_2_timestamp(df_all['time'].tolist())
 
@@ -256,12 +268,16 @@ def fn_sim_result_render():
     df_gannt = df.copy()
     df_gannt['done_time_tick'] = fn_2_timestamp(df_gannt['done_time'].values)
     df_gannt['duration'] = fn_2_timestamp(df_gannt['wait_time'].values)
-    fig_gannt = fn_gen_gannt_chart(df_gannt, 'arrival_time', 'done_time_tick', 'custom_id', margin=None, color='wait_time', op=0.8, title='顧客等待時間', hover=['wait_time'])
+    fig_gannt = fn_gen_plotly_gannt(df_gannt, 'arrival_time', 'done_time_tick', 'custom_id', margin=None, color='wait_time', op=0.8, title='顧客等待時間', hover=['wait_time'])
+
+    fig_box = fn_gen_plotly_box(df_gannt, 'wait_time')
 
     st.write('')
     st.plotly_chart(fig)
     st.write('')
     st.plotly_chart(fig_gannt)
+    st.write('')
+    st.plotly_chart(fig_box)
 
     st.write('')
     with st.expander('檢視詳細資料'):
