@@ -123,7 +123,7 @@ def fn_gen_plotly_gannt(df, x_s, x_e, y, margin=None, color=None, op=None, title
 
 def fn_gen_plotly_box(df, col, margin=None, title='', x_title=''):
 
-    fig = px.box(df, y=col)
+    fig = px.box(df, y=col, points='all')
 
     fig.update_layout(margin=margin,
                       title={
