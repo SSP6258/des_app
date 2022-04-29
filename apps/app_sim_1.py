@@ -94,6 +94,26 @@ def fn_gen_plotly_scatter(fig, x_data, y_data, row=1, col=1, margin=None, color=
     return fig
 
 
+def fn_gen_gannt_chart(df, x_s, x_e, y, margin=None, color=None, op=None, title=None, hover=None):
+
+    margin = {'l': 0, 'r': 100, 't': 30, 'b': 20} if margin is None else margin
+    fig = px.timeline(df, x_start=x_s, x_end=x_e, y=y, color=color,
+                      hover_data=hover,
+                      color_continuous_scale='portland', opacity=op)
+    fig.update_yaxes(autorange="reversed", title={'text': ''})
+    fig.update_xaxes(tickformat="%H:%M")
+    fig.update_layout(margin=margin,
+                      title={
+                          'text': f'{title}',
+                          'x': 0.5,
+                          'xanchor': 'center',
+                          'yanchor': 'top'
+                      }, )
+
+    return fig
+
+
+
 def fn_2_timestamp(values):
     time_stamp = [datetime.datetime.utcfromtimestamp(t * 60) for t in values]
     return time_stamp
@@ -126,6 +146,9 @@ def fn_sim_customer(env, res, log=True):
         dic_record['time'].append(env.now)
         dic_record['custom_id'].append(custom)
 
+        # dic_record['arrival'].append(t)
+        # dic_record['wait_time'].append(-1)
+
 
 def fn_sim_cashier(env, res, log=True):
     global ARRIVAL_TIMES_CPY
@@ -138,6 +161,8 @@ def fn_sim_cashier(env, res, log=True):
         print(f'CASHIER N Time {env.now} queue {res.level}') if log else None
         dic_record['queue'].append(res.level)
         dic_record['time'].append(env.now)
+        # dic_record['custom_id'].append(-1)
+        # dic_record['arrival'].append(-1)
 
 
 def fn_sim_main(log=True):
@@ -149,8 +174,8 @@ def fn_sim_main(log=True):
 
     env.run(until=SIM_TIME)
 
-    dic_record['done_time'] = [dic_record['arrival'][i] + dic_record['wait_time'][i] for i in
-                               range(len(dic_record['wait_time']))]
+    # dic_record['done_time'] = [dic_record['arrival'][i] + dic_record['wait_time'][i] for i in
+    #                            range(len(dic_record['wait_time']))]
 
 
 def fn_sim_fr_st():
@@ -193,6 +218,7 @@ def fn_sim_result_render():
 
     df = pd.DataFrame(dict([(k, pd.Series(v)) for k, v in dic_record.items()]))
     df.reset_index(inplace=True)
+    df['done_time'] = df['arrival'] + df['wait_time']
     df_all = df.copy()
     df['arrival'] = df['arrival'].fillna(-1)
     df['arrival'] = df['arrival'].astype(int)
@@ -220,14 +246,22 @@ def fn_sim_result_render():
     fig = fn_gen_plotly_scatter(fig, x1, y1, margin=margin, color='red', size=10, row=2, opacity=0.5, line_shape='hv',
                                 mode='lines', xaxis_range=xaxis_range, name='排隊人數', legend=True)
 
+    df_gannt = df.copy()
+    df_gannt['done_time_tick'] = fn_2_timestamp(df_gannt['done_time'].values)
+    df_gannt['duration'] = fn_2_timestamp(df_gannt['wait_time'].values)
+    fig_gannt = fn_gen_gannt_chart(df_gannt, 'arrival_time', 'done_time_tick', 'custom_id', margin=None, color='wait_time', op=0.8, title='顧客等待時間', hover=['wait_time'])
+
     st.write('')
     st.plotly_chart(fig)
+    st.write('')
+    st.plotly_chart(fig_gannt)
 
     st.write('')
     with st.expander('檢視詳細資料'):
         st.write(dic_sim_cfg)
         st.write('')
         AgGrid(df_all, theme='blue')
+        AgGrid(df[['custom_id', 'arrival_time', 'done_time', 'wait_time']], theme='blue')
 
 
 def app():
