@@ -54,13 +54,14 @@ dic_record = {
     'custom_id': [],
     'wait_time': [],
     'done_time': [],
+    'cashier': [],
 }
 
 
-def fn_gen_plotly_hist(fig, data, title, row=1, col=1, margin=None, bins=100, line_color='white', showlegend=False,
-                       hovertext=None, barmode='group', opacity=0.8, xaxis_range=None):
+def fn_gen_plotly_hist(fig, data, name, row=1, col=1, margin=None, bins=100, line_color='white', showlegend=False,
+                       legendgroup=None, hovertext=None, barmode='group', opacity=0.8, xaxis_range=None):
     fig.add_trace(
-        go.Histogram(x=data, name=title, showlegend=showlegend, nbinsx=bins, hovertext=hovertext,
+        go.Histogram(x=data, name=name, showlegend=showlegend, nbinsx=bins, hovertext=hovertext, legendgroup=legendgroup,
                      marker=dict(
                          opacity=opacity,
                          line=dict(
@@ -80,17 +81,17 @@ def fn_gen_plotly_hist(fig, data, title, row=1, col=1, margin=None, bins=100, li
 
 def fn_gen_plotly_scatter(fig, x_data, y_data, row=1, col=1, margin=None, color=None, text=None, opacity=0.8,
                           xlabel=None, ylabel=None, title=None, size=None, marker_sym=None,
-                          legend=False, name=None, line_shape=None, mode=None, xaxis_range=None):
+                          legend=False, legendgroup=None, name=None, line_shape=None, mode=None, xaxis_range=None):
 
     fig.add_trace(go.Scatter(x=x_data, y=y_data, line_shape=line_shape, mode=mode, showlegend=legend,
-                             marker_symbol=marker_sym, name=name,
+                             marker_symbol=marker_sym, name=name, legendgroup=legendgroup,
                              marker=dict(size=size,
                                          opacity=opacity,
                                          line={'color': 'white', 'width': 1},
                                          color=color)
                              ), row=row, col=col)
 
-    fig.update_layout(margin=margin, xaxis_range=xaxis_range)
+    fig.update_layout(margin=margin, xaxis_range=xaxis_range, legend_tracegroupgap = 225)
 
     return fig
 
@@ -184,7 +185,7 @@ def fn_sim_customer(env, res, log=True):
         # dic_record['wait_time'].append(-1)
 
 
-def fn_sim_cashier(env, res, log=True):
+def fn_sim_cashier(env, res, c, log=True):
     global ARRIVAL_TIMES_CPY
     while True:
         if len(ARRIVAL_TIMES_CPY):
@@ -195,6 +196,8 @@ def fn_sim_cashier(env, res, log=True):
         print(f'CASHIER N Time {env.now} queue {res.level}') if log else None
         dic_record['queue'].append(res.level)
         dic_record['time'].append(env.now)
+        dic_record['cashier'].append(c)
+
         # dic_record['custom_id'].append(-1)
         # dic_record['arrival'].append(-1)
 
@@ -204,7 +207,7 @@ def fn_sim_main(log=True):
     res = simpy.Container(env)
     env.process(fn_sim_customer(env, res, log))
     for c in range(dic_sim_cfg['CASHIER_NUM']):
-        env.process(fn_sim_cashier(env, res, log))
+        env.process(fn_sim_cashier(env, res, c, log=log))
 
     env.run(until=SIM_TIME)
 
@@ -267,34 +270,41 @@ def fn_sim_result_render():
 
     x0 = df['arrival_time']
     xaxis_range = [df_all['tick_time'].min(), df_all['tick_time'].max()]
-    fig = fn_gen_plotly_hist(fig, x0, '顧客分布', row=1, col=1, bins=df.shape[0], margin=margin, xaxis_range=xaxis_range, showlegend=True)
+    fig = fn_gen_plotly_hist(fig, x0, '顧客分布', row=1, col=1, bins=df.shape[0], margin=margin, xaxis_range=xaxis_range,
+                             showlegend=True, legendgroup='1')
 
-    x1 = df_all['tick_time']
-    y1 = df_all['queue']
     fig = fn_gen_plotly_scatter(fig, x0, [1 for _ in x0], margin=margin, color='royalblue', size=14, marker_sym=6, row=2,
-                                opacity=0.5, mode='markers', xaxis_range=xaxis_range, name='顧客抵達', legend=True)
+                                opacity=0.5, mode='markers', xaxis_range=xaxis_range, name='顧客抵達',
+                                legend=True, legendgroup='2')
 
     x2 = fn_2_timestamp([t+dic_sim_cfg['CASHIER_TIME'] for t in df['done_time'].values])
     fig = fn_gen_plotly_scatter(fig, x2, [0 for _ in x2], margin=margin, color='green', size=14, marker_sym=5, row=2,
-                                opacity=0.5, mode='markers', xaxis_range=xaxis_range, name='顧客離開', legend=True)
+                                opacity=0.5, mode='markers', xaxis_range=xaxis_range, name='顧客離開',
+                                legend=True, legendgroup='2')
 
+    x1 = df_all['tick_time']
+    y1 = df_all['queue']
     fig = fn_gen_plotly_scatter(fig, x1, y1, margin=margin, color='red', size=10, row=2, opacity=0.5, line_shape='hv',
-                                mode='lines', xaxis_range=xaxis_range, name='排隊人數', legend=True)
+                                mode='lines', xaxis_range=xaxis_range, name='排隊人數', legend=True, legendgroup='2')
 
     df_gannt = df.copy()
     df_gannt['done_time_tick'] = fn_2_timestamp(df_gannt['done_time'].values)
     df_gannt['duration'] = fn_2_timestamp(df_gannt['wait_time'].values)
-    fig_gannt = fn_gen_plotly_gannt(df_gannt, 'arrival_time', 'done_time_tick', 'custom_id', margin=None, color='wait_time', op=0.8, title='顧客排隊時間', hover=['wait_time'])
+    margin = {'l': 0, 'r': 100, 't': 30, 'b': 20}
+    fig_gannt = fn_gen_plotly_gannt(df_gannt, 'arrival_time', 'done_time_tick', 'custom_id', margin=margin, color='wait_time', op=0.8, title='顧客排隊時間 甘特圖', hover=['wait_time'])
 
-    fig_box = fn_gen_plotly_box(df_gannt, 'wait_time', title='排隊時間分布', x_title=f'條件: {dic_sim_cfg["CUSTOMER_NUM"]}位顧客,'
-                                                                               f' {dic_sim_cfg["CASHIER_NUM"]}位收銀員, '
+    title = '排隊時間分布 箱形圖'
+    fig_box = fn_gen_plotly_box(df_gannt, 'wait_time', margin=margin, title=title, x_title=f'條件: {dic_sim_cfg["CUSTOMER_NUM"]}位顧客,'
+                                                                               f'{dic_sim_cfg["CASHIER_NUM"]}位收銀員, '
                                                                                f'收銀時間{dic_sim_cfg["CASHIER_TIME"]}分鐘')
 
     st.write('')
     st.plotly_chart(fig)
     st.write('')
+    st.write('[甘特圖 維基百科:  \n  由亨利·甘特 (Henry Laurence Gantt) 於1910年開發出。  \n  顯示專案、進度以及其他與時間相關的系統進展的內在關係隨著時間進展的情況。](https://zh.wikipedia.org/wiki/%E7%94%98%E7%89%B9%E5%9B%BE)')
     st.plotly_chart(fig_gannt)
     st.write('')
+    st.write('[箱形圖 維基百科:  \n  於1977年由美國著名統計學家 約翰·圖基（John Tukey）發明。  \n  它能顯示出一組數據的最大值、最小值、中位數、及上下四分位數。](https://zh.wikipedia.org/wiki/%E7%AE%B1%E5%BD%A2%E5%9C%96)')
     st.plotly_chart(fig_box)
 
     st.write('')
