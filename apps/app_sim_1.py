@@ -122,7 +122,7 @@ def fn_gen_plotly_gannt(df, x_s, x_e, y, margin=None, color=None, op=None, title
     return fig
 
 
-def fn_gen_plotly_box(df, col, margin=None, title='', x_title=''):
+def fn_gen_plotly_box(df, col, margin=None, title='', x_title='', y_title=''):
 
     fig = px.box(df, y=col, points='all')
 
@@ -137,7 +137,7 @@ def fn_gen_plotly_box(df, col, margin=None, title='', x_title=''):
                           title=x_title
                       ),
                       yaxis=dict(
-                          title="等待時間(分)"
+                          title=y_title
                       )
                       )
 
@@ -294,7 +294,7 @@ def fn_sim_result_render():
     fig_gannt = fn_gen_plotly_gannt(df_gannt, 'arrival_time', 'done_time_tick', 'custom_id', margin=margin, color='wait_time', op=0.8, title='顧客排隊時間 甘特圖', hover=['wait_time'])
 
     title = '排隊時間分布 箱形圖'
-    fig_box = fn_gen_plotly_box(df_gannt, 'wait_time', margin=margin, title=title, x_title=f'條件: {dic_sim_cfg["CUSTOMER_NUM"]}位顧客,'
+    fig_box = fn_gen_plotly_box(df_gannt, 'wait_time', margin=margin, title=title, y_title="排隊時間(分)", x_title=f'條件: {dic_sim_cfg["CUSTOMER_NUM"]}位顧客, '
                                                                                f'{dic_sim_cfg["CASHIER_NUM"]}位收銀員, '
                                                                                f'收銀時間{dic_sim_cfg["CASHIER_TIME"]}分鐘')
 
