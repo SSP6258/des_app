@@ -40,7 +40,7 @@ dic_sim_cfg = {
 ARRIVAL_TIMES = [0]
 ARRIVAL_TIMES_CPY = [0]
 SIM_TIME = 0
-SIM_EXTEND_TIME = 120
+SIM_EXTEND_TIME = 60*100
 
 MUSIC = "https://soundcloud.com/xzammopcelmf/sbu4e1m2v1mt?utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing"
 
