@@ -290,7 +290,7 @@ def fn_sim_result_render():
     df_gannt = df.copy()
     df_gannt['done_time_tick'] = fn_2_timestamp(df_gannt['done_time'].values)
     df_gannt['duration'] = fn_2_timestamp(df_gannt['wait_time'].values)
-    margin = {'l': 0, 'r': 100, 't': 30, 'b': 20}
+    margin = {'l': 0, 'r': 100, 't': 50, 'b': 20}
     fig_gannt = fn_gen_plotly_gannt(df_gannt, 'arrival_time', 'done_time_tick', 'custom_id', margin=margin, color='wait_time', op=0.8, title='顧客排隊時間 甘特圖', hover=['wait_time'])
 
     title = '排隊時間分布 箱形圖'
