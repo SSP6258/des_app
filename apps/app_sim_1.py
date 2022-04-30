@@ -301,7 +301,7 @@ def fn_sim_result_render():
     st.write('')
     st.plotly_chart(fig)
     st.write('')
-    st.write('[甘特圖 維基百科:  \n  由亨利·甘特 (Henry Laurence Gantt) 於1910年開發出。  \n  顯示專案、進度以及其他與時間相關的系統進展的內在關係隨著時間進展的情況。](https://zh.wikipedia.org/wiki/%E7%94%98%E7%89%B9%E5%9B%BE)')
+    st.write('[甘特圖 維基百科:  \n  於1910年由亨利·甘特 (Henry Laurence Gantt) 開發出。  \n  顯示專案、進度以及其他與時間相關的系統進展的內在關係隨著時間進展的情況。](https://zh.wikipedia.org/wiki/%E7%94%98%E7%89%B9%E5%9B%BE)')
     st.plotly_chart(fig_gannt)
     st.write('')
     st.write('[箱形圖 維基百科:  \n  於1977年由美國著名統計學家 約翰·圖基（John Tukey）發明。  \n  它能顯示出一組數據的最大值、最小值、中位數、及上下四分位數。](https://zh.wikipedia.org/wiki/%E7%AE%B1%E5%BD%A2%E5%9C%96)')
