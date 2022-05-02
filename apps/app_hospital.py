@@ -261,12 +261,15 @@ def fn_sim_fr_st():
     global dic_sim_cfg
 
     with st.form(key='task'):
-        c1, c2, c3, c4 = st.columns([1, 1, 1, 1])
-        # dic_sim_cfg['RESOURCE_NUM'] = c1.slider('幾位急診醫師?', min_value=1, max_value=5, value=RESOURCE_NUM, step=1)
-        dic_sim_cfg['RESOURCE_NUM'] = c1.selectbox('幾位急診醫師?', range(1, 5), RESOURCE_NUM-1)
-        dic_sim_cfg['TASK_NUM'] = c2.selectbox('幾位病患?', range(1, TASK_NUM + 5), TASK_NUM - 1)
+        c1, c2, c3, c4 = st.columns([2, 2, 2, 1])
+        dic_sim_cfg['RESOURCE_NUM'] = c1.slider('幾位急診醫師?', min_value=1, max_value=5, value=RESOURCE_NUM, step=1)
+        # dic_sim_cfg['RESOURCE_NUM'] = c1.selectbox('幾位急診醫師?', range(1, 5), RESOURCE_NUM-1)
+        # dic_sim_cfg['TASK_NUM'] = c2.selectbox('幾位病患?', range(1, TASK_NUM + 5), TASK_NUM - 1)
+        dic_sim_cfg['TASK_NUM'] = c2.slider('幾位病患?', min_value=10, max_value=50, value=TASK_NUM, step=10)
         dic_sim_cfg['PROC_TIME'] = c3.selectbox('看診需要幾分鐘?', range(10, 60, 10), list(range(10, 60, 10)).index(PROC_TIME))
-        dic_sim_cfg['SHOW_PREEMPT'] = c4.selectbox('顯示中斷?', [True, False], 1)
+        # dic_sim_cfg['SHOW_PREEMPT'] = c4.selectbox('顯示中斷?', [True, False], 1)
+        dic_sim_cfg['SHOW_PREEMPT'] = c4.radio('顯示中斷?', [True, False], 1)
+
         submitted = st.form_submit_button('開始模擬')
 
         if submitted:
