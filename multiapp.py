@@ -37,8 +37,8 @@ class MultiApp:
                     3: "https://soundcloud.com/audio_lava/hulu-ukulele?utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing",
                     4: "https://soundcloud.com/xzammopcelmf/sbu4e1m2v1mt?utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing",
                 }
-                i = random.randint(2, len(music))
-                st_player(music[4], playing=False, loop=True, volume=0.3, height=250, light=True)
+                i = random.randint(1, len(music))
+                st_player(music[i], playing=False, loop=True, volume=0.3, height=250, light=True)
         except:
             pass
 
