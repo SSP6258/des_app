@@ -24,10 +24,11 @@ Simulation Env Config
 """
 
 RESOURCE_NUM = 2
-TASK_NUM = 20
+TASK_NUM = 10
 PROC_TIME = 30
 PEAK_ARRIVAL_CLOCK = 24
 ARRIVAL_DURATION = 1
+SHOW_PREEMPT=True
 # ============================
 dic_sim_cfg = {
     'RESOURCE_NUM': RESOURCE_NUM,
@@ -35,6 +36,7 @@ dic_sim_cfg = {
     'PROC_TIME': PROC_TIME,
     'PEAK_ARRIVAL_CLOCK': PEAK_ARRIVAL_CLOCK,
     'ARRIVAL_DURATION': ARRIVAL_DURATION,
+    'SHOW_PREEMPT': SHOW_PREEMPT,
 }
 # =============================
 
@@ -51,26 +53,21 @@ def resource_user(name, env, resource, wait, prio, excu_time):
     timeLeft = excu_time
     while timeLeft > 0:
         with resource.request(priority=prio) as req:
-            print('%s requesting at %s with priority=%s' % (name, env.now, prio))
             fn_record_it(env.now, name, prio, 'req')
             yield req
-            print('%s got resource at %s' % (name, env.now))
             status = 'got' if timeLeft == excu_time else 'got_resumed'
             fn_record_it(env.now, name, prio, status)
             try:
                 yield env.timeout(timeLeft)
                 timeLeft = 0
-                print('%s completed at time %g' % (name, env.now))
                 fn_record_it(env.now, name, prio, 'done')
             except simpy.Interrupt as interrupt:
                 by = interrupt.cause.by
                 usage = env.now - interrupt.cause.usage_since
                 timeLeft -= usage
                 fn_record_it(env.now, name, prio, 'preempted')
-                if resource.capacity == 1:
+                if resource.capacity <= 1:
                     prio -= 0.1  # bump my prio enough so I'm next
-                print('%s got preempted by %s at %s after %s' %
-                      (name, by, env.now, usage))
 
 
 def fn_add_date_line(fig, df, date, mode='lines', width=10, color='lightgreen', dash=None, op=None):
@@ -191,21 +188,28 @@ def fn_sim_result_render(df, capacity, x_typ='linear', show_preempt=True):
     df_all = df_all.sort_values(by='prio', ascending=False)
     df_all = df_all.reset_index()
     df_all = df_all[['task_pri', 'tick', 'tick_e', 'prio']]
+    df_all.drop_duplicates(subset=['task_pri', 'tick', 'tick_e'], keep='first', inplace=True)
 
     print(df_se)
     print(df_ge)
 
-    df1 = df_all.copy()
+    df1 = df_se.copy()
     df1['delta'] = df1['tick_e'] - df1['tick']
+    # df1_g = pd.DataFrame(df1.groupby('task_pri', as_index=True)['delta'].sum())
+
+    print(df1)
+    # print(df1_g)
+
     wait_max = df1['delta'].max()
-    df1 = df1[df1['delta']==df1['delta'].max()]
-    p = df1["task_pri"].values[0]
+    df1 = df1[df1['delta']==wait_max]
+    p = df1['task_pri'].values[0]
     who = p.split("_")[0]
     lev = int(round(float(p.split("_")[-1]), 0))
 
     icon = '😵' if wait_max < 60 else '🥴'
+    wait_max = str(int(wait_max/60))+'小時'+str(wait_max%60)+'分鐘' if wait_max >= 60 else str(wait_max)+'分鐘'
     title = f'模擬: {capacity}位急診醫師 {dic_sim_cfg["TASK_NUM"]}位病患 5類檢傷分級<br>' \
-            f'結果: {who} 等級{lev} 等待最久: {wait_max}分鐘 {icon}'
+            f'結果: {who} 等級{lev} 等待最久: {wait_max} {icon}'
     fig = fn_gen_plotly_gannt(df_all, 'tick', 'tick_e', 'task_pri', color='prio', op=0.5,
                               title=title, text='task_pri', x_typ=x_typ)
 
@@ -218,10 +222,12 @@ def fn_sim_result_render(df, capacity, x_typ='linear', show_preempt=True):
             r_ticks = fn_2_timestamp(r_ticks.copy())
 
         for t in p_ticks:
-            fig = fn_add_date_line(fig, df_all, t, dash='dash', color='orangered', width=2, op=0.6)
+            fig = fn_add_date_line(fig, df_all, t, dash='dash', color='orangered', width=2, op=0.5)
 
         for t in r_ticks:
-            fig = fn_add_date_line(fig, df_all, t, dash='dash', color='green', width=2, op=0.6)
+            fig = fn_add_date_line(fig, df_all, t, dash='dash', color='green', width=2, op=0.5)
+
+    st.write('-  🚑  [急診 檢傷分級: 1.復甦急救、2.危急、3.緊急、4.次緊急、5.非緊急](https://www.mgems.org/index.php/zh/question-answer/hospital-ems-triage)')
 
     st.plotly_chart(fig)
 
@@ -255,10 +261,12 @@ def fn_sim_fr_st():
     global dic_sim_cfg
 
     with st.form(key='task'):
-        c1, c2, c3 = st.columns([2, 1, 1])
-        dic_sim_cfg['RESOURCE_NUM'] = c1.slider('幾位急診醫師?', min_value=1, max_value=5, value=RESOURCE_NUM, step=1)
+        c1, c2, c3, c4 = st.columns([1, 1, 1, 1])
+        # dic_sim_cfg['RESOURCE_NUM'] = c1.slider('幾位急診醫師?', min_value=1, max_value=5, value=RESOURCE_NUM, step=1)
+        dic_sim_cfg['RESOURCE_NUM'] = c1.selectbox('幾位急診醫師?', range(1, 5), RESOURCE_NUM-1)
         dic_sim_cfg['TASK_NUM'] = c2.selectbox('幾位病患?', range(1, TASK_NUM + 5), TASK_NUM - 1)
         dic_sim_cfg['PROC_TIME'] = c3.selectbox('看診需要幾分鐘?', range(10, 60, 10), list(range(10, 60, 10)).index(PROC_TIME))
+        dic_sim_cfg['SHOW_PREEMPT'] = c4.selectbox('顯示中斷?', [True, False], 1)
         submitted = st.form_submit_button('開始模擬')
 
         if submitted:
@@ -267,7 +275,7 @@ def fn_sim_fr_st():
             fn_sim_main()
             t2 = datetime.datetime.now()
             du = t2 - t1
-            st.write(f'模擬時間: {du.microseconds} 微秒(us) 🚑 ')
+            st.write(f'模擬時間: {du.microseconds} 微秒(us)')
 
             # st.write('🚑')
             # pprint.pprint(dic_sim_cfg)
@@ -275,7 +283,7 @@ def fn_sim_fr_st():
             df = pd.DataFrame(dic_record)
             df = df[['tick', 'task_id', 'prio', 'status']]
 
-            fn_sim_result_render(df, dic_sim_cfg['RESOURCE_NUM'], x_typ='time', show_preempt=True)
+            fn_sim_result_render(df, dic_sim_cfg['RESOURCE_NUM'], x_typ='time', show_preempt=dic_sim_cfg['SHOW_PREEMPT'])
 
 
 def fn_sim_main():
