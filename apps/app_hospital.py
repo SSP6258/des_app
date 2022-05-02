@@ -66,7 +66,8 @@ def resource_user(name, env, resource, wait, prio, excu_time):
                 usage = env.now - interrupt.cause.usage_since
                 timeLeft -= usage
                 fn_record_it(env.now, name, prio, 'preempted')
-                if resource.capacity <= 1:
+                print(env.now, name, prio, resource.count, resource.capacity, len(resource.queue))
+                if len(resource.queue):
                     prio -= 0.1  # bump my prio enough so I'm next
 
 
@@ -188,17 +189,16 @@ def fn_sim_result_render(df, capacity, x_typ='linear', show_preempt=True):
     df_all = df_all.sort_values(by='prio', ascending=False)
     df_all = df_all.reset_index()
     df_all = df_all[['task_pri', 'tick', 'tick_e', 'prio']]
-    df_all.drop_duplicates(subset=['task_pri', 'tick', 'tick_e'], keep='first', inplace=True)
+    # df_all.drop_duplicates(subset=['task_pri', 'tick', 'tick_e'], keep='first', inplace=True)
 
-    print(df_se)
-    print(df_ge)
+    # print(df_se)
+    # print(df_ge)
 
     df1 = df_se.copy()
     df1['delta'] = df1['tick_e'] - df1['tick']
     # df1_g = pd.DataFrame(df1.groupby('task_pri', as_index=True)['delta'].sum())
 
-    print(df1)
-    # print(df1_g)
+    # print(df1)
 
     wait_max = df1['delta'].max()
     df1 = df1[df1['delta']==wait_max]
@@ -251,7 +251,7 @@ def fn_sim_init():
     dic_sim_cfg['ARRIVAL_TIMES'] = ARRIVAL_TIMES
     dic_sim_cfg['PRIORITY'] = [min(5, max(1, int(random.gauss(3.5, 0.8)))) for _ in range(dic_sim_cfg['TASK_NUM'])]
 
-    print(dic_sim_cfg)
+    # print(dic_sim_cfg)
 
 
 def fn_sim_fr_st():
@@ -268,7 +268,8 @@ def fn_sim_fr_st():
         dic_sim_cfg['TASK_NUM'] = c2.slider('幾位病患?', min_value=10, max_value=50, value=TASK_NUM, step=10)
         dic_sim_cfg['PROC_TIME'] = c3.selectbox('看診需要幾分鐘?', range(10, 60, 10), list(range(10, 60, 10)).index(PROC_TIME))
         # dic_sim_cfg['SHOW_PREEMPT'] = c4.selectbox('顯示中斷?', [True, False], 1)
-        dic_sim_cfg['SHOW_PREEMPT'] = c4.radio('顯示中斷?', [True, False], 1)
+        show = c4.radio('顯示中斷?', ['顯示', '隱藏'], 1)
+        dic_sim_cfg['SHOW_PREEMPT'] = True if show == '顯示' else False
 
         submitted = st.form_submit_button('開始模擬')
 
