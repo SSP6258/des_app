@@ -268,10 +268,10 @@ def fn_sim_result_render(df, capacity, x_typ='linear', show_preempt=True):
             r_ticks = fn_2_timestamp(r_ticks.copy())
 
         for t in p_ticks:
-            fig = fn_add_v_line(fig, t, dash='dash', color='orangered', width=1, op=0.7)
+            fig = fn_add_v_line(fig, t, dash='dash', color='orangered', width=1, op=0.9)
 
         for t in r_ticks:
-            fig = fn_add_v_line(fig, t, dash='dash', color='green', width=1, op=0.7)
+            fig = fn_add_v_line(fig, t, dash='dash', color='green', width=1, op=0.9)
 
     st.write(
         '-  🚑  [台灣醫院 急診 檢傷分級: 1.復甦急救 > 2.危急 > 3.緊急 > 4.次緊急 > 5.非緊急](https://www.mgems.org/index.php/zh/question-answer/hospital-ems-triage)')
