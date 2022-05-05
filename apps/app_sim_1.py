@@ -27,6 +27,7 @@ dic_sim_cfg = {
     'CASHIER_TIME': CASHIER_TIME,
     'PEAK_ARRIVAL_CLOCK': PEAK_ARRIVAL_CLOCK,
     'ARRIVAL_DURATION': ARRIVAL_DURATION,
+    'RANDOM_SEED': None,
 }
 # =============================
 
@@ -159,6 +160,9 @@ def fn_sim_init():
 
     dic_record = {k: [] for k in dic_record.keys()}
 
+    seed = dic_sim_cfg['RANDOM_SEED']
+    random.seed(seed)
+
     mu = dic_sim_cfg['PEAK_ARRIVAL_CLOCK'] * 60
     sig = dic_sim_cfg['ARRIVAL_DURATION'] * 60
     ARRIVAL_TIMES = [int(random.gauss(mu, sig)) for _ in range(dic_sim_cfg['CUSTOMER_NUM'])]
@@ -222,10 +226,15 @@ def fn_sim_fr_st():
     global dic_sim_cfg
 
     with st.form(key='sale1'):
-        c1, c2, c3 = st.columns([2, 1, 1])
-        dic_sim_cfg['CUSTOMER_NUM'] = c1.slider('幾位顧客?', min_value=5, max_value=100, value=CUSTOMER_NUM, step=1)
+        c1, c2, c3, c4 = st.columns([1, 1, 1, 1])
+        dic_sim_cfg['CUSTOMER_NUM'] = c1.slider('幾位顧客?', min_value=5, max_value=100, value=CUSTOMER_NUM, step=5)
+        # dic_sim_cfg['CUSTOMER_NUM'] = c1.selectbox('幾位顧客?', range(10, 100, 10), list(range(10, 100, 10)).index(CUSTOMER_NUM))
         dic_sim_cfg['CASHIER_NUM'] = c2.selectbox('幾個收銀員?', range(1, CASHIER_NUM + 5), CASHIER_NUM - 1)
         dic_sim_cfg['CASHIER_TIME'] = c3.selectbox('收銀需要幾分鐘?', range(1, CASHIER_TIME + 5), CASHIER_TIME - 1)
+        seed= c4.selectbox('場景固定?', ['固定', '隨機'], 0)
+        # seed = c4.radio('場景', ['固定', '隨機'], 0)
+        dic_sim_cfg['RANDOM_SEED'] = 42 if seed == '固定' else None
+
         submitted = st.form_submit_button('開始模擬')
 
         if submitted:
