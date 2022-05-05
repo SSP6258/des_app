@@ -179,7 +179,7 @@ def dc_profiler(func):
 @dc_profiler
 def fn_sim_result_render(df, capacity, x_typ='linear', show_preempt=True):
     df['task_pri'] = df['task_id'].astype(str) + '_' + df['prio'].astype(str)
-    df['task_pri'] = df['task_pri'].apply(lambda x: x.split('.0')[0])
+    df['task_pri'] = df['task_pri'].apply(lambda x: x.split('.0')[0]+'級')
     df_s = df[df['status'] == 'req'].sort_values(by=['task_pri', 'tick'], ascending=[False, True])
     df_s = df_s.reset_index()
 
@@ -234,7 +234,7 @@ def fn_sim_result_render(df, capacity, x_typ='linear', show_preempt=True):
     icon = '😵' if wait_max < 60 else '🥴'
     wait_max = str(int(wait_max / 60)) + '小時' + str(wait_max % 60) + '分鐘' if wait_max >= 60 else str(wait_max) + '分鐘'
     title = f'模擬: {capacity}位急診醫師 {dic_sim_cfg["TASK_NUM"]}位病患 {dic_sim_cfg["PRIO_MAX"]}類檢傷分級<br>' \
-            f'結果: {who} 等級{lev} 等待最久 👉 {wait_max} {icon}'
+            f'結果: {who}_{lev}級 等待最久 👉 {wait_max} {icon}'
 
     if dic_sim_cfg['SHOW_TYP'] == 'PROC_ONLY':
         df_gannt = df_ge.copy()
