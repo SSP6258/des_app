@@ -344,7 +344,7 @@ def fn_sim_main():
         if dic_sim_cfg['IS_PROC_TIME_FIX']:
             proc_time = dic_sim_cfg['PROC_TIME']
         else:
-            proc_time = int(random.gauss(dic_sim_cfg['PROC_TIME'], 1))
+            proc_time = int(random.gauss(dic_sim_cfg['PROC_TIME'], 10))
 
         env.process(fn_sim_resource_user('病患' + str(i), env, res,
                                          wait=dic_sim_cfg['ARRIVAL_TIMES'][i],
