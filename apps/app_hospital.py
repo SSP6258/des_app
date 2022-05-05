@@ -346,7 +346,7 @@ def fn_sim_main():
         else:
             proc_time = int(random.gauss(dic_sim_cfg['PROC_TIME'], 10))
 
-        env.process(fn_sim_resource_user('病患' + str(i), env, res,
+        env.process(fn_sim_resource_user('病患' + str(i+1), env, res,
                                          wait=dic_sim_cfg['ARRIVAL_TIMES'][i],
                                          prio=dic_sim_cfg['PRIORITY'][i],
                                          excu_time=proc_time))
