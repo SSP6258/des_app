@@ -271,8 +271,7 @@ def fn_sim_result_render(df, capacity, x_typ='linear', show_preempt=True):
     fig = fn_gen_plotly_gannt(df_gannt, 'tick', 'tick_e', 'task_pri', margin=margin, color='prio', op=op,
                               title=title, text=None, x_typ=x_typ, range_color=(1.0, dic_sim_cfg['PRIO_MAX']))
 
-    fig_q = make_subplots(rows=2, cols=1,
-                          subplot_titles=(f'病患到院時間分布', f'急診候診人數分布'))
+
     margin = {'l': 90, 'r': 100, 't': 40, 'b': 0}
 
     df_req = df[df['status'] == 'req']
@@ -280,12 +279,14 @@ def fn_sim_result_render(df, capacity, x_typ='linear', show_preempt=True):
     come_time = df_req['tick'].values
     x0 = fn_2_timestamp(come_time) if x_typ == 'time' else come_time
     x1 = fn_2_timestamp(df['tick'].values) if x_typ == 'time' else df['tick']
-
+    y1 = df['queue'].values
     x_range = [min(x1), max(x1)]
 
+    fig_q = make_subplots(rows=2, cols=1,
+                          subplot_titles=(f'病患到院時間分布', f'急診候診人數分布 👉 最多 {max(y1)} 人'))
     fig_q = fn_gen_plotly_hist(fig_q, x0, '到院時間', row=1, margin=margin, showlegend=True,
                                legendgroup=1, xaxis_range=x_range)
-    y1 = df['queue'].values
+
     fig_q = fn_gen_plotly_scatter(fig_q, x1, y1, margin=margin, row=2, color='red', size=10, opacity=0.5, line_shape='hv',
                                 mode='lines', name='候診人數(人)', legend=True, legendgroup='2', xaxis_range=x_range)
 
@@ -305,7 +306,7 @@ def fn_sim_result_render(df, capacity, x_typ='linear', show_preempt=True):
     df_h = df_all[df_all['fr'] == 'df_se']
     df_h = pd.DataFrame(df_h.groupby('task_id', as_index=True)['delta'].sum())
     fig_h = make_subplots(rows=2, cols=1,
-                          subplot_titles=(f'等待時間分布<br>{df_h.shape[0]}位病患 👉 平均等待{int(df_h["delta"].mean())}分鐘',))
+                          subplot_titles=(f'等待時間分布 👉 平均{int(df_h["delta"].mean())}分鐘',))
 
     margin = {'l': 90, 'r': 60, 't': 40, 'b': 0}
     fig_h = fn_gen_plotly_hist(fig_h, df_h['delta'], '等待時間(分)', row=1, col=1, margin=margin, showlegend=True,
