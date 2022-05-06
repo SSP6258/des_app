@@ -16,6 +16,7 @@ dic_record = {
     'status': [],
     'tick': [],
     'prio': [],
+    'queue': [],
 }
 
 """
@@ -49,15 +50,33 @@ dic_sim_cfg = {
 # =============================
 
 
-def fn_record_it(tick, name, prio, status):
+def fn_record_it(tick, name, prio, status, queue):
     dic_record['tick'].append(tick)
     dic_record['task_id'].append(name)
     dic_record['prio'].append(round(prio, 1))
     dic_record['status'].append(status)
+    dic_record['queue'].append(queue)
 
 
 def fn_add_v_line(fig, x, width=10, color='lightgreen', dash=None, op=None):
     fig.add_vline(x=x, line_width=width, line_dash=dash, line_color=color, opacity=op)
+    return fig
+
+
+def fn_gen_plotly_scatter(fig, x_data, y_data, row=1, col=1, margin=None, color=None, text=None, opacity=0.8,
+                          xlabel=None, ylabel=None, title=None, size=None, marker_sym=None,
+                          legend=False, legendgroup=None, name=None, line_shape=None, mode=None, xaxis_range=None):
+
+    fig.add_trace(go.Scatter(x=x_data, y=y_data, line_shape=line_shape, mode=mode, showlegend=legend,
+                             marker_symbol=marker_sym, name=name, legendgroup=legendgroup,
+                             marker=dict(size=size,
+                                         opacity=opacity,
+                                         line={'color': 'white', 'width': 1},
+                                         color=color)
+                             ), row=row, col=col)
+
+    fig.update_layout(margin=margin, xaxis_range=xaxis_range, legend_tracegroupgap = 225)
+
     return fig
 
 
@@ -247,18 +266,19 @@ def fn_sim_result_render(df, capacity, x_typ='linear', show_preempt=True):
         op = 0.3
 
     df_gannt = df_gannt.sort_values(by='prio', ascending=False)
-    fig = fn_gen_plotly_gannt(df_gannt, 'tick', 'tick_e', 'task_pri', color='prio', op=op,
+
+    margin = {'l': 0, 'r': 100, 't': 50, 'b': 20}
+    fig = fn_gen_plotly_gannt(df_gannt, 'tick', 'tick_e', 'task_pri', margin=margin, color='prio', op=op,
                               title=title, text=None, x_typ=x_typ, range_color=(1.0, dic_sim_cfg['PRIO_MAX']))
 
-    df_h = df_all[df_all['fr'] == 'df_se']
-    df_h = pd.DataFrame(df_h.groupby('task_id', as_index=True)['delta'].sum())
-    fig_h = make_subplots(rows=2, cols=1,
-                          subplot_titles=(f'等待時間分布<br>{df_h.shape[0]}位病患 👉 平均等待{int(df_h["delta"].mean())}分鐘',))
+    x1 = fn_2_timestamp(df['tick'].values) if x_typ == 'time' else df['tick']
+    y1 = df['queue'].values
 
-    margin = {'l': 70, 'r': 30, 't': 40, 'b': 0}
-    fig_h = fn_gen_plotly_hist(fig_h, df_h['delta'], '等待時間(分)', row=1, col=1, margin=margin, showlegend=True,
-                               legendgroup=1)
-    fig_h.add_trace(go.Box(x=df_h['delta'], name='等待時間(分)', legendgroup=2), row=2, col=1)
+    fig_q = make_subplots(rows=2, cols=1,
+                          subplot_titles=(f'待診人數分布',))
+    margin = {'l': 90, 'r': 100, 't': 40, 'b': 0}
+    fig_q = fn_gen_plotly_scatter(fig_q, x1, y1, margin=margin, row=1, color='red', size=10, opacity=0.5, line_shape='hv',
+                                mode='lines', name='待診人數(人)', legend=True, legendgroup='1', xaxis_range=fig.layout.xaxis.range)
 
     if show_preempt:
         p_ticks = df[df['status'] == 'preempted']['tick'].values
@@ -273,11 +293,23 @@ def fn_sim_result_render(df, capacity, x_typ='linear', show_preempt=True):
         for t in r_ticks:
             fig = fn_add_v_line(fig, t, dash='dash', color='green', width=1.5, op=0.9)
 
+    df_h = df_all[df_all['fr'] == 'df_se']
+    df_h = pd.DataFrame(df_h.groupby('task_id', as_index=True)['delta'].sum())
+    fig_h = make_subplots(rows=2, cols=1,
+                          subplot_titles=(f'等待時間分布<br>{df_h.shape[0]}位病患 👉 平均等待{int(df_h["delta"].mean())}分鐘',))
+
+    margin = {'l': 90, 'r': 60, 't': 40, 'b': 0}
+    fig_h = fn_gen_plotly_hist(fig_h, df_h['delta'], '等待時間(分)', row=1, col=1, margin=margin, showlegend=True,
+                               legendgroup=1)
+    fig_h.add_trace(go.Box(x=df_h['delta'], name='等待時間(分)', legendgroup=2), row=2, col=1)
+
+    # =========== Rendering Here ===========
+
     st.write(
         '-  🚑  [台灣醫院 急診 檢傷分級: 1.復甦急救 > 2.危急 > 3.緊急 > 4.次緊急 > 5.非緊急](https://www.mgems.org/index.php/zh/question-answer/hospital-ems-triage)')
 
     st.plotly_chart(fig)
-    st.write('')
+    st.plotly_chart(fig_q)
     st.plotly_chart(fig_h)
 
     with st.expander('檢視詳細資料'):
@@ -290,24 +322,28 @@ def fn_sim_result_render(df, capacity, x_typ='linear', show_preempt=True):
         st.write(dic_sim_cfg)
 
 
-def fn_sim_resource_user(name, env, resource, wait, prio, excu_time):
+def fn_sim_resource_user(name, env, resource, res_c, wait, prio, proc_time):
     yield env.timeout(wait)
-    timeLeft = excu_time
+    timeLeft = proc_time
     while timeLeft > 0:
         with resource.request(priority=prio) as req:
-            fn_record_it(env.now, name, prio, 'req')
+            yield res_c.put(1)
+            fn_record_it(env.now, name, prio, 'req', res_c.level)
+
             yield req
-            status = 'got' if timeLeft == excu_time else 'got_resumed'
-            fn_record_it(env.now, name, prio, status)
+
+            yield res_c.get(1)
+            status = 'got' if timeLeft == proc_time else 'got_resumed'
+            fn_record_it(env.now, name, prio, status, res_c.level)
             try:
                 yield env.timeout(timeLeft)
                 timeLeft = 0
-                fn_record_it(env.now, name, prio, 'done')
+                fn_record_it(env.now, name, prio, 'done', res_c.level)
             except simpy.Interrupt as interrupt:
                 # by = interrupt.cause.by
                 usage = env.now - interrupt.cause.usage_since
                 timeLeft -= usage
-                fn_record_it(env.now, name, prio, 'preempted')
+                fn_record_it(env.now, name, prio, 'preempted', res_c.level)
                 prio -= 0.1  # bump my prio enough so I'm next
 
 
@@ -338,6 +374,7 @@ def fn_sim_init():
 def fn_sim_main():
     env = simpy.Environment()
     res = simpy.PreemptiveResource(env, capacity=dic_sim_cfg['RESOURCE_NUM'])
+    res_c = simpy.Container(env)
 
     for i in range(dic_sim_cfg['TASK_NUM']):
 
@@ -346,10 +383,10 @@ def fn_sim_main():
         else:
             proc_time = int(random.gauss(dic_sim_cfg['PROC_TIME'], 10))
 
-        env.process(fn_sim_resource_user('病患' + str(i+1), env, res,
+        env.process(fn_sim_resource_user('病患' + str(i+1), env, res, res_c,
                                          wait=dic_sim_cfg['ARRIVAL_TIMES'][i],
                                          prio=dic_sim_cfg['PRIORITY'][i],
-                                         excu_time=proc_time))
+                                         proc_time=proc_time))
 
     env.run()
 
@@ -393,7 +430,7 @@ def fn_sim_fr_st():
             fn_sim_init()
             fn_sim_main()
 
-            df = pd.DataFrame({k: dic_record[k] for k in ['tick', 'task_id', 'prio', 'status']})
+            df = pd.DataFrame({k: dic_record[k] for k in ['tick', 'task_id', 'prio', 'status', 'queue']})
             df['prio'] = df['prio'].apply(lambda x: float(round(x, 0)))
 
             fn_sim_result_render(df.copy(), dic_sim_cfg['RESOURCE_NUM'], x_typ='time',
