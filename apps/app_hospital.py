@@ -271,7 +271,6 @@ def fn_sim_result_render(df, capacity, x_typ='linear', show_preempt=True):
     fig = fn_gen_plotly_gannt(df_gannt, 'tick', 'tick_e', 'task_pri', margin=margin, color='prio', op=op,
                               title=title, text=None, x_typ=x_typ, range_color=(1.0, dic_sim_cfg['PRIO_MAX']))
 
-
     margin = {'l': 90, 'r': 100, 't': 40, 'b': 0}
 
     df_req = df[df['status'] == 'req']
@@ -286,9 +285,12 @@ def fn_sim_result_render(df, capacity, x_typ='linear', show_preempt=True):
                           subplot_titles=(f'病患到院時間分布', f'急診候診人數分布 👉 最多 {max(y1)} 人'))
     fig_q = fn_gen_plotly_hist(fig_q, x0, '到院時間', row=1, margin=margin, showlegend=True,
                                legendgroup=1, xaxis_range=x_range)
+    if x_typ=='time':
+        fig_q.update_xaxes(tickformat="%H:%M")
 
     fig_q = fn_gen_plotly_scatter(fig_q, x1, y1, margin=margin, row=2, color='red', size=10, opacity=0.5, line_shape='hv',
                                 mode='lines', name='候診人數(人)', legend=True, legendgroup='2', xaxis_range=x_range)
+
 
     if show_preempt:
         p_ticks = df[df['status'] == 'preempted']['tick'].values
