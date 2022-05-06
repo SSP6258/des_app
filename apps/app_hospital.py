@@ -408,7 +408,8 @@ def fn_sim_fr_st():
         show = c1.radio('顯示 中斷與回復', ['隱藏', '顯示'], 0)
         dic_sim_cfg['SHOW_PREEMPT'] = show == '顯示'
 
-        show = c2.radio('顯示狀態', ['看診與等待', '看診', '等待'], 0)
+        # show = c2.radio('顯示狀態', ['看診與等待', '看診', '等待'], 0)
+        show = c2.radio('顯示狀態', ['看診與等待', '看診'], 0)
 
         if show == '看診與等待':
             dic_sim_cfg['SHOW_TYP'] = 'PROC_AND_WAIT'
