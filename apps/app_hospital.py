@@ -275,7 +275,9 @@ def fn_sim_result_render(df, capacity, x_typ='linear', show_preempt=True):
                           subplot_titles=(f'病患到院時間分布', f'急診待診人數分布'))
     margin = {'l': 90, 'r': 100, 't': 40, 'b': 0}
 
-    come_time = df[df['status']=='req']['tick'].values
+    df_req = df[df['status'] == 'req']
+    df_req.drop_duplicates(subset=['task_id'], keep='first', inplace=True)
+    come_time = df_req['tick'].values
     x0 = fn_2_timestamp(come_time) if x_typ == 'time' else come_time
     x1 = fn_2_timestamp(df['tick'].values) if x_typ == 'time' else df['tick']
 
