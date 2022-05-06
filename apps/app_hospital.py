@@ -271,14 +271,21 @@ def fn_sim_result_render(df, capacity, x_typ='linear', show_preempt=True):
     fig = fn_gen_plotly_gannt(df_gannt, 'tick', 'tick_e', 'task_pri', margin=margin, color='prio', op=op,
                               title=title, text=None, x_typ=x_typ, range_color=(1.0, dic_sim_cfg['PRIO_MAX']))
 
-    x1 = fn_2_timestamp(df['tick'].values) if x_typ == 'time' else df['tick']
-    y1 = df['queue'].values
-
     fig_q = make_subplots(rows=2, cols=1,
-                          subplot_titles=(f'待診人數分布',))
+                          subplot_titles=(f'病患到院時間分布', f'急診待診人數分布'))
     margin = {'l': 90, 'r': 100, 't': 40, 'b': 0}
-    fig_q = fn_gen_plotly_scatter(fig_q, x1, y1, margin=margin, row=1, color='red', size=10, opacity=0.5, line_shape='hv',
-                                mode='lines', name='待診人數(人)', legend=True, legendgroup='1', xaxis_range=fig.layout.xaxis.range)
+
+    come_time = df[df['status']=='req']['tick'].values
+    x0 = fn_2_timestamp(come_time) if x_typ == 'time' else come_time
+    x1 = fn_2_timestamp(df['tick'].values) if x_typ == 'time' else df['tick']
+
+    x_range = [min(x1), max(x1)]
+
+    fig_q = fn_gen_plotly_hist(fig_q, x0, '到院時間', row=1, margin=margin, showlegend=True,
+                               legendgroup=1, xaxis_range=x_range)
+    y1 = df['queue'].values
+    fig_q = fn_gen_plotly_scatter(fig_q, x1, y1, margin=margin, row=2, color='red', size=10, opacity=0.5, line_shape='hv',
+                                mode='lines', name='待診人數(人)', legend=True, legendgroup='2', xaxis_range=x_range)
 
     if show_preempt:
         p_ticks = df[df['status'] == 'preempted']['tick'].values

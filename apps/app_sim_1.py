@@ -41,7 +41,7 @@ dic_sim_cfg = {
 ARRIVAL_TIMES = [0]
 ARRIVAL_TIMES_CPY = [0]
 SIM_TIME = 0
-SIM_EXTEND_TIME = 60*100
+SIM_EXTEND_TIME = 60 * 100
 
 MUSIC = "https://soundcloud.com/xzammopcelmf/sbu4e1m2v1mt?utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing"
 
@@ -62,7 +62,8 @@ dic_record = {
 def fn_gen_plotly_hist(fig, data, name, row=1, col=1, margin=None, bins=100, line_color='white', showlegend=False,
                        legendgroup=None, hovertext=None, barmode='group', opacity=0.8, xaxis_range=None):
     fig.add_trace(
-        go.Histogram(x=data, name=name, showlegend=showlegend, nbinsx=bins, hovertext=hovertext, legendgroup=legendgroup,
+        go.Histogram(x=data, name=name, showlegend=showlegend, nbinsx=bins, hovertext=hovertext,
+                     legendgroup=legendgroup,
                      marker=dict(
                          opacity=opacity,
                          line=dict(
@@ -83,7 +84,6 @@ def fn_gen_plotly_hist(fig, data, name, row=1, col=1, margin=None, bins=100, lin
 def fn_gen_plotly_scatter(fig, x_data, y_data, row=1, col=1, margin=None, color=None, text=None, opacity=0.8,
                           xlabel=None, ylabel=None, title=None, size=None, marker_sym=None,
                           legend=False, legendgroup=None, name=None, line_shape=None, mode=None, xaxis_range=None):
-
     fig.add_trace(go.Scatter(x=x_data, y=y_data, line_shape=line_shape, mode=mode, showlegend=legend,
                              marker_symbol=marker_sym, name=name, legendgroup=legendgroup,
                              marker=dict(size=size,
@@ -92,13 +92,12 @@ def fn_gen_plotly_scatter(fig, x_data, y_data, row=1, col=1, margin=None, color=
                                          color=color)
                              ), row=row, col=col)
 
-    fig.update_layout(margin=margin, xaxis_range=xaxis_range, legend_tracegroupgap = 225)
+    fig.update_layout(margin=margin, xaxis_range=xaxis_range, legend_tracegroupgap=225)
 
     return fig
 
 
 def fn_gen_plotly_gannt(df, x_s, x_e, y, margin=None, color=None, op=None, title=None, hover=None):
-
     margin = {'l': 0, 'r': 100, 't': 30, 'b': 20} if margin is None else margin
     fig = px.timeline(df, x_start=x_s, x_end=x_e, y=y, color=color,
                       hover_data=hover,
@@ -124,7 +123,6 @@ def fn_gen_plotly_gannt(df, x_s, x_e, y, margin=None, color=None, op=None, title
 
 
 def fn_gen_plotly_box(df, col, margin=None, title='', x_title='', y_title=''):
-
     fig = px.box(df, y=col, points='all')
 
     fig.update_layout(margin=margin,
@@ -231,7 +229,7 @@ def fn_sim_fr_st():
         # dic_sim_cfg['CUSTOMER_NUM'] = c1.selectbox('幾位顧客?', range(10, 100, 10), list(range(10, 100, 10)).index(CUSTOMER_NUM))
         dic_sim_cfg['CASHIER_NUM'] = c2.selectbox('幾個收銀員?', range(1, CASHIER_NUM + 5), CASHIER_NUM - 1)
         dic_sim_cfg['CASHIER_TIME'] = c3.selectbox('收銀需要幾分鐘?', range(1, CASHIER_TIME + 5), CASHIER_TIME - 1)
-        seed= c4.selectbox('場景固定?', ['固定', '隨機'], 0)
+        seed = c4.selectbox('場景固定?', ['固定', '隨機'], 0)
         # seed = c4.radio('場景', ['固定', '隨機'], 0)
         dic_sim_cfg['RANDOM_SEED'] = 42 if seed == '固定' else None
 
@@ -283,11 +281,12 @@ def fn_sim_result_render():
     fig = fn_gen_plotly_hist(fig, x0, '顧客分布', row=1, col=1, bins=df.shape[0], margin=margin, xaxis_range=xaxis_range,
                              showlegend=True, legendgroup='1')
 
-    fig = fn_gen_plotly_scatter(fig, x0, [1 for _ in x0], margin=margin, color='royalblue', size=14, marker_sym=6, row=2,
+    fig = fn_gen_plotly_scatter(fig, x0, [1 for _ in x0], margin=margin, color='royalblue', size=14, marker_sym=6,
+                                row=2,
                                 opacity=0.5, mode='markers', xaxis_range=xaxis_range, name='顧客抵達',
                                 legend=True, legendgroup='2')
 
-    x2 = fn_2_timestamp([t+dic_sim_cfg['CASHIER_TIME'] for t in df['done_time'].values])
+    x2 = fn_2_timestamp([t + dic_sim_cfg['CASHIER_TIME'] for t in df['done_time'].values])
     fig = fn_gen_plotly_scatter(fig, x2, [0 for _ in x2], margin=margin, color='green', size=14, marker_sym=5, row=2,
                                 opacity=0.5, mode='markers', xaxis_range=xaxis_range, name='顧客離開',
                                 legend=True, legendgroup='2')
@@ -301,20 +300,24 @@ def fn_sim_result_render():
     df_gannt['done_time_tick'] = fn_2_timestamp(df_gannt['done_time'].values)
     df_gannt['duration'] = fn_2_timestamp(df_gannt['wait_time'].values)
     margin = {'l': 0, 'r': 100, 't': 50, 'b': 20}
-    fig_gannt = fn_gen_plotly_gannt(df_gannt, 'arrival_time', 'done_time_tick', 'custom_id', margin=margin, color='wait_time', op=0.8, title='顧客排隊時間 甘特圖', hover=['wait_time'])
+    fig_gannt = fn_gen_plotly_gannt(df_gannt, 'arrival_time', 'done_time_tick', 'custom_id', margin=margin,
+                                    color='wait_time', op=0.8, title='顧客排隊時間 甘特圖', hover=['wait_time'])
 
     title = '排隊時間分布 箱形圖'
-    fig_box = fn_gen_plotly_box(df_gannt, 'wait_time', margin=margin, title=title, y_title="排隊時間(分)", x_title=f'條件: {dic_sim_cfg["CUSTOMER_NUM"]}位顧客, '
-                                                                               f'{dic_sim_cfg["CASHIER_NUM"]}位收銀員, '
-                                                                               f'收銀時間{dic_sim_cfg["CASHIER_TIME"]}分鐘')
+    fig_box = fn_gen_plotly_box(df_gannt, 'wait_time', margin=margin, title=title, y_title="排隊時間(分)",
+                                x_title=f'條件: {dic_sim_cfg["CUSTOMER_NUM"]}位顧客, '
+                                        f'{dic_sim_cfg["CASHIER_NUM"]}位收銀員, '
+                                        f'收銀時間{dic_sim_cfg["CASHIER_TIME"]}分鐘')
 
     st.write('')
     st.plotly_chart(fig)
     st.write('')
-    st.write('[🌎 甘特圖 維基百科:  \n  於1910年由亨利·甘特 (Henry Laurence Gantt) 開發出。  \n  顯示專案、進度以及其他與時間相關的系統進展的內在關係隨著時間進展的情況。](https://zh.wikipedia.org/wiki/%E7%94%98%E7%89%B9%E5%9B%BE)')
+    st.write(
+        '[🌎 甘特圖 維基百科:  \n  於1910年由亨利·甘特 (Henry Laurence Gantt) 開發出。  \n  顯示專案、進度以及其他與時間相關的系統進展的內在關係隨著時間進展的情況。](https://zh.wikipedia.org/wiki/%E7%94%98%E7%89%B9%E5%9B%BE)')
     st.plotly_chart(fig_gannt)
     st.write('')
-    st.write('[🌎 箱形圖 維基百科:  \n  於1977年由美國著名統計學家 約翰·圖基（John Tukey）發明。  \n  它能顯示出一組數據的最大值、最小值、中位數、及上下四分位數。](https://zh.wikipedia.org/wiki/%E7%AE%B1%E5%BD%A2%E5%9C%96)')
+    st.write(
+        '[🌎 箱形圖 維基百科:  \n  於1977年由美國著名統計學家 約翰·圖基（John Tukey）發明。  \n  它能顯示出一組數據的最大值、最小值、中位數、及上下四分位數。](https://zh.wikipedia.org/wiki/%E7%AE%B1%E5%BD%A2%E5%9C%96)')
     st.plotly_chart(fig_box)
 
     st.write('')
