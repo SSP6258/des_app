@@ -306,7 +306,7 @@ def fn_sim_result_render(df, capacity, x_typ='linear', show_preempt=True):
     df_h = df_all[df_all['fr'] == 'df_se']
     df_h = pd.DataFrame(df_h.groupby('task_id', as_index=True)['delta'].sum())
     fig_h = make_subplots(rows=2, cols=1,
-                          subplot_titles=(f'等待時間分布 👉 平均{int(df_h["delta"].mean())}分鐘',))
+                          subplot_titles=(f'等待時間分布 👉 平均{int(df_h["delta"].mean())}分鐘, 最久{int(df_h["delta"].max())}分鐘',))
 
     margin = {'l': 90, 'r': 60, 't': 40, 'b': 0}
     fig_h = fn_gen_plotly_hist(fig_h, df_h['delta'], '等待時間(分)', row=1, col=1, margin=margin, showlegend=True,
