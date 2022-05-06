@@ -272,7 +272,7 @@ def fn_sim_result_render(df, capacity, x_typ='linear', show_preempt=True):
                               title=title, text=None, x_typ=x_typ, range_color=(1.0, dic_sim_cfg['PRIO_MAX']))
 
     fig_q = make_subplots(rows=2, cols=1,
-                          subplot_titles=(f'病患到院時間分布', f'急診待診人數分布'))
+                          subplot_titles=(f'病患到院時間分布', f'急診候診人數分布'))
     margin = {'l': 90, 'r': 100, 't': 40, 'b': 0}
 
     df_req = df[df['status'] == 'req']
@@ -287,7 +287,7 @@ def fn_sim_result_render(df, capacity, x_typ='linear', show_preempt=True):
                                legendgroup=1, xaxis_range=x_range)
     y1 = df['queue'].values
     fig_q = fn_gen_plotly_scatter(fig_q, x1, y1, margin=margin, row=2, color='red', size=10, opacity=0.5, line_shape='hv',
-                                mode='lines', name='待診人數(人)', legend=True, legendgroup='2', xaxis_range=x_range)
+                                mode='lines', name='候診人數(人)', legend=True, legendgroup='2', xaxis_range=x_range)
 
     if show_preempt:
         p_ticks = df[df['status'] == 'preempted']['tick'].values
