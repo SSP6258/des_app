@@ -27,7 +27,7 @@ class MultiApp:
         })
 
     def run(self):
-        st.set_page_config(page_title="離散事件模擬", page_icon="🎬")
+        st.set_page_config(page_title="離散事件模擬", page_icon="🎲")
 
         try:
             with st.sidebar:
