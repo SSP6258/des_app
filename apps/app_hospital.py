@@ -430,8 +430,8 @@ def fn_sim_fr_st():
         else:
             dic_sim_cfg['SHOW_TYP'] = 'WAIT_ONLY'
 
-        proc_typ = c3.radio('看診時間', ['固定', '常態分布'], 0)
-        dic_sim_cfg['IS_PROC_TIME_FIX'] = proc_typ == '固定'
+        proc_typ = c3.radio('看診時間', [f'固定', f'常態分布'], 0)
+        dic_sim_cfg['IS_PROC_TIME_FIX'] = '固定' in proc_typ
 
         seed = c4.radio('場景', ['固定', '隨機'], 0)
         dic_sim_cfg['RANDOM_SEED'] = 42 if seed == '固定' else None
