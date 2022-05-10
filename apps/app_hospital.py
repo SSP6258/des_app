@@ -289,7 +289,7 @@ def fn_sim_result_render(df, capacity, x_typ='linear', show_preempt=True):
 
     fig_q = fn_gen_plotly_scatter(fig_q, x1, y1, margin=margin, row=2, color='red', size=10, opacity=0.5,
                                   line_shape='hv',
-                                  mode='lines', name='候診人數(人)', legend=True, legendgroup='2', xaxis_range=x_range)
+                                  mode='lines', name='候診人數', legend=True, legendgroup='2', xaxis_range=x_range)
 
     if show_preempt:
         p_ticks = df[df['status'] == 'preempted']['tick'].values
