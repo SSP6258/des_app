@@ -66,7 +66,6 @@ def fn_add_v_line(fig, x, width=10, color='lightgreen', dash=None, op=None):
 def fn_gen_plotly_scatter(fig, x_data, y_data, row=1, col=1, margin=None, color=None, text=None, opacity=0.8,
                           xlabel=None, ylabel=None, title=None, size=None, marker_sym=None,
                           legend=False, legendgroup=None, name=None, line_shape=None, mode=None, xaxis_range=None):
-
     fig.add_trace(go.Scatter(x=x_data, y=y_data, line_shape=line_shape, mode=mode, showlegend=legend,
                              marker_symbol=marker_sym, name=name, legendgroup=legendgroup,
                              marker=dict(size=size,
@@ -75,20 +74,20 @@ def fn_gen_plotly_scatter(fig, x_data, y_data, row=1, col=1, margin=None, color=
                                          color=color)
                              ), row=row, col=col)
 
-    fig.update_layout(margin=margin, xaxis_range=xaxis_range, legend_tracegroupgap = 225)
+    fig.update_layout(margin=margin, xaxis_range=xaxis_range, legend_tracegroupgap=225)
 
     return fig
 
 
 def fn_gen_plotly_hist(fig, data, name, row=1, col=1, margin=None, bins=100, line_color='white', showlegend=False,
-                       legendgroup=None, hovertext=None, barmode='group', op=0.8, xaxis_range=None):
+                       legendgroup=None, hovertext=None, bingroup=None, barmode='group', op=0.8, xaxis_range=None):
     fig.add_trace(
-        go.Histogram(x=data, name=name, showlegend=showlegend, nbinsx=bins, hovertext=hovertext,
+        go.Histogram(x=data, name=name, bingroup=bingroup, showlegend=showlegend, nbinsx=bins, hovertext=hovertext,
                      legendgroup=legendgroup,
                      marker=dict(
                          opacity=op,
                          line=dict(
-                             color=line_color, width=0.8
+                             color=line_color, width=0.5
                          ),
                      )),
         row=row,
@@ -198,7 +197,7 @@ def dc_profiler(func):
 @dc_profiler
 def fn_sim_result_render(df, capacity, x_typ='linear', show_preempt=True):
     df['task_pri'] = df['task_id'].astype(str) + '_' + df['prio'].astype(str)
-    df['task_pri'] = df['task_pri'].apply(lambda x: x.split('.0')[0]+'級')
+    df['task_pri'] = df['task_pri'].apply(lambda x: x.split('.0')[0] + '級')
     df_s = df[df['status'] == 'req'].sort_values(by=['task_pri', 'tick'], ascending=[False, True])
     df_s = df_s.reset_index()
 
@@ -285,12 +284,12 @@ def fn_sim_result_render(df, capacity, x_typ='linear', show_preempt=True):
                           subplot_titles=(f'病患到院時間分布', f'急診候診人數分布 👉 最多 {max(y1)} 人'))
     fig_q = fn_gen_plotly_hist(fig_q, x0, '到院時間', row=1, margin=margin, showlegend=True,
                                legendgroup=1, xaxis_range=x_range)
-    if x_typ=='time':
+    if x_typ == 'time':
         fig_q.update_xaxes(tickformat="%H:%M")
 
-    fig_q = fn_gen_plotly_scatter(fig_q, x1, y1, margin=margin, row=2, color='red', size=10, opacity=0.5, line_shape='hv',
-                                mode='lines', name='候診人數(人)', legend=True, legendgroup='2', xaxis_range=x_range)
-
+    fig_q = fn_gen_plotly_scatter(fig_q, x1, y1, margin=margin, row=2, color='red', size=10, opacity=0.5,
+                                  line_shape='hv',
+                                  mode='lines', name='候診人數(人)', legend=True, legendgroup='2', xaxis_range=x_range)
 
     if show_preempt:
         p_ticks = df[df['status'] == 'preempted']['tick'].values
@@ -307,12 +306,23 @@ def fn_sim_result_render(df, capacity, x_typ='linear', show_preempt=True):
 
     df_h = df_all[df_all['fr'] == 'df_se']
     df_h = pd.DataFrame(df_h.groupby('task_id', as_index=True)['delta'].sum())
+    df_h['prio'] = [df_all[df_all['task_id'] == idx]['prio'].values[0] for idx in df_h.index]
+    # print(df_h)
     fig_h = make_subplots(rows=2, cols=1,
-                          subplot_titles=(f'等待時間分布 👉 平均{int(df_h["delta"].mean())}分鐘, 最久{int(df_h["delta"].max())}分鐘',))
+                          subplot_titles=(
+                          f'等待時間分布 👉 平均{int(df_h["delta"].mean())}分鐘, 最久{int(df_h["delta"].max())}分鐘',))
 
     margin = {'l': 90, 'r': 60, 't': 40, 'b': 0}
-    fig_h = fn_gen_plotly_hist(fig_h, df_h['delta'], '等待時間(分)', row=1, col=1, margin=margin, showlegend=True,
-                               legendgroup=1)
+
+    for p in sorted(df_h['prio'].unique(), reverse=False):
+        df_p = df_h[df_h['prio'] == p]
+        fig_h = fn_gen_plotly_hist(fig_h, df_p['delta'], f'{int(p)}級 等待時間', row=1, col=1, margin=margin,
+                                   showlegend=True,
+                                   legendgroup=1, bingroup=1, barmode='stack')
+
+    # fig_h = fn_gen_plotly_hist(fig_h, df_h['delta'], '等待時間(分)', row=1, col=1, margin=margin, showlegend=True,
+    #                            legendgroup=1, bingroup=1)
+
     fig_h.add_trace(go.Box(x=df_h['delta'], name='等待時間(分)', legendgroup=2), row=2, col=1)
 
     # =========== Rendering Here ===========
@@ -395,7 +405,7 @@ def fn_sim_main():
         else:
             proc_time = int(random.gauss(dic_sim_cfg['PROC_TIME'], 10))
 
-        env.process(fn_sim_resource_user('病患' + str(i+1), env, res, res_c,
+        env.process(fn_sim_resource_user('病患' + str(i + 1), env, res, res_c,
                                          wait=dic_sim_cfg['ARRIVAL_TIMES'][i],
                                          prio=dic_sim_cfg['PRIORITY'][i],
                                          proc_time=proc_time))
@@ -412,9 +422,9 @@ def fn_sim_fr_st():
     with st.form(key='task'):
         c1, c2, c3, c4 = st.columns([1, 1, 1, 1])
         dic_sim_cfg['TASK_NUM'] = c1.selectbox('幾位急診病患?', range(10, 60, 10), list(range(10, 60, 10)).index(TASK_NUM))
-        dic_sim_cfg['RESOURCE_NUM'] = c2.selectbox('幾位急診醫師?', range(1, 6), RESOURCE_NUM-1)
+        dic_sim_cfg['RESOURCE_NUM'] = c2.selectbox('幾位急診醫師?', range(1, 6), RESOURCE_NUM - 1)
         dic_sim_cfg['PROC_TIME'] = c3.selectbox('看診需要幾分鐘?', range(10, 60, 10), list(range(10, 60, 10)).index(PROC_TIME))
-        dic_sim_cfg['PRIO_MAX'] = c4.selectbox('要分成幾個級別?', range(1, 11), PRIO_MAX-1)
+        dic_sim_cfg['PRIO_MAX'] = c4.selectbox('要分成幾個級別?', range(1, 11), PRIO_MAX - 1)
 
         c1, c2, c3, c4 = st.columns([1, 1, 1, 1])
         show = c1.radio('顯示 中斷與回復', ['隱藏', '顯示'], 0)
