@@ -10,6 +10,7 @@ from st_aggrid import AgGrid
 import plotly.graph_objs as go
 import plotly.express as px
 from plotly.subplots import make_subplots
+import plotly.colors
 
 dic_record = {
     'task_id': [],
@@ -80,12 +81,14 @@ def fn_gen_plotly_scatter(fig, x_data, y_data, row=1, col=1, margin=None, color=
 
 
 def fn_gen_plotly_hist(fig, data, name, row=1, col=1, margin=None, bins=100, line_color='white', showlegend=False,
-                       legendgroup=None, hovertext=None, bingroup=None, barmode='group', op=0.8, xaxis_range=None):
+                       legendgroup=None, hovertext=None, bingroup=None, barmode='group', op=0.8, xaxis_range=None,
+                       color=None):
     fig.add_trace(
         go.Histogram(x=data, name=name, bingroup=bingroup, showlegend=showlegend, nbinsx=bins, hovertext=hovertext,
                      legendgroup=legendgroup,
                      marker=dict(
                          opacity=op,
+                         color=color,
                          line=dict(
                              color=line_color, width=0.5
                          ),
@@ -310,20 +313,27 @@ def fn_sim_result_render(df, capacity, x_typ='linear', show_preempt=True):
     # print(df_h)
     fig_h = make_subplots(rows=2, cols=1,
                           subplot_titles=(
-                          f'等待時間分布 👉 平均{int(df_h["delta"].mean())}分鐘, 最久{int(df_h["delta"].max())}分鐘',))
+                          f'等待時間分布 👉 平均{int(df_h["delta"].mean())}分鐘, 最久{int(df_h["delta"].max())}分鐘',
+                          '等待時間分布 👉 箱型圖 📦 '))
 
     margin = {'l': 90, 'r': 60, 't': 40, 'b': 0}
 
+    cols = plotly.colors.DEFAULT_PLOTLY_COLORS
+    c = 0
     for p in sorted(df_h['prio'].unique(), reverse=False):
         df_p = df_h[df_h['prio'] == p]
-        fig_h = fn_gen_plotly_hist(fig_h, df_p['delta'], f'{int(p)}級 等待時間', row=1, col=1, margin=margin,
+        fig_h = fn_gen_plotly_hist(fig_h, df_p['delta'], f'{int(p)}級', row=1, col=1, margin=margin,
                                    showlegend=True,
-                                   legendgroup=1, bingroup=1, barmode='stack')
+                                   legendgroup=1, bingroup=1, barmode='stack', color=cols[c])
+
+        fig_h.add_trace(go.Box(x=df_p['delta'], name=f'{int(p)}級', legendgroup=2, marker=dict(color=cols[c]), showlegend=False), row=2, col=1)
+        c = c + 1
 
     # fig_h = fn_gen_plotly_hist(fig_h, df_h['delta'], '等待時間(分)', row=1, col=1, margin=margin, showlegend=True,
     #                            legendgroup=1, bingroup=1)
 
-    fig_h.add_trace(go.Box(x=df_h['delta'], name='等待時間(分)', legendgroup=2), row=2, col=1)
+    # fig_h.add_trace(go.Box(x=df_h['delta'], name='等待時間(分)', legendgroup=2), row=2, col=1)
+
 
     # =========== Rendering Here ===========
 
