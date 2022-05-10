@@ -318,7 +318,8 @@ def fn_sim_result_render(df, capacity, x_typ='linear', show_preempt=True):
 
     margin = {'l': 90, 'r': 60, 't': 40, 'b': 0}
 
-    cols = plotly.colors.DEFAULT_PLOTLY_COLORS
+    cols = plotly.colors.qualitative._cols
+    # plotly.colors.DEFAULT_PLOTLY_COLORS
     c = 0
     for p in sorted(df_h['prio'].unique(), reverse=False):
         df_p = df_h[df_h['prio'] == p]
