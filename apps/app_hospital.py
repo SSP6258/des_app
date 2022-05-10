@@ -314,7 +314,7 @@ def fn_sim_result_render(df, capacity, x_typ='linear', show_preempt=True):
     fig_h = make_subplots(rows=2, cols=1,
                           subplot_titles=(
                           f'等待時間分布 👉 平均{int(df_h["delta"].mean())}分鐘, 最久{int(df_h["delta"].max())}分鐘',
-                          '等待時間分布 👉 箱型圖 📦 '))
+                          '各級別的等待時間分布 👉 箱型圖 📦 '))
 
     margin = {'l': 90, 'r': 60, 't': 40, 'b': 0}
 
