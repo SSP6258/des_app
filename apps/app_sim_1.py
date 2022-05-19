@@ -281,7 +281,7 @@ def fn_sim_result_render():
     fig = fn_gen_plotly_hist(fig, x0, '顧客分布', row=1, col=1, bins=df.shape[0], margin=margin, xaxis_range=xaxis_range,
                              showlegend=True, legendgroup='1')
 
-    fig = fn_gen_plotly_scatter(fig, x0, [1 for _ in x0], margin=margin, color='royalblue', size=14, marker_sym=6,
+    fig = fn_gen_plotly_scatter(fig, x0, [x0.count(_) for _ in x0], margin=margin, color='royalblue', size=14, marker_sym=6,
                                 row=2,
                                 opacity=0.5, mode='markers', xaxis_range=xaxis_range, name='顧客抵達',
                                 legend=True, legendgroup='2')
