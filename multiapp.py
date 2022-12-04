@@ -54,7 +54,7 @@ class MultiApp:
             index=1)
 
         for _ in range(8):
-            st.sidebar('')
+            st.sidebar.write('')
 
 
 
