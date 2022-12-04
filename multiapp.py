@@ -53,6 +53,9 @@ class MultiApp:
             format_func=lambda app: app['title'],
             index=1)
 
+        for _ in range(8):
+            st.sidebar('')
+
 
 
         app['function']()
