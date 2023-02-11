@@ -116,9 +116,11 @@ def fn_gen_plotly_gannt(df, x_s, x_e, y, margin=None, color=None, op=None, title
     fig = px.timeline(df, x_start=x_s, x_end=x_e, y=y, color=color, text=text, color_continuous_scale='Spectral',
                       template='plotly', opacity=op, hover_data=hover, range_color=range_color)
 
-    st.write(df)
+    with st.expander("Show RAW data"):
+        st.write(df)
+
     fig = fig.add_annotation(x=df[x_s][16], y=df[y][16],
-                             text=f'{df.index[16]} {df["task_pri"][16]} {df[x_s][16]}',
+                             text=f'{df["task_pri"][16]} 到院',
                              showarrow=True,
                              arrowhead=1,
                              arrowsize=2,)
