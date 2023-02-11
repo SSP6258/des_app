@@ -42,9 +42,9 @@ class MultiApp:
         except:
             pass
 
-        st.sidebar.title("👨‍🏫 [Jack.Pan's](https://www.facebook.com/jack.pan.96/) 離散事件模擬")
-        st.sidebar.write('- ✉️ssp6258@yahoo.com.tw')
-        st.sidebar.write('- 🚧️ [故障報修、意見反饋](https://github.com/SSP6258/des_app/issues)')
+        st.sidebar.title("👨‍🏫 [$Jack.Pan's$](https://www.facebook.com/jack.pan.96/) $離散事件模擬$")
+        st.sidebar.write('- ✉️$ssp6258@yahoo.com.tw$')
+        st.sidebar.write('- 🚧️ [$故障報修、意見反饋$](https://github.com/SSP6258/des_app/issues)')
 
         st.sidebar.header('🧭 功能導航')
         app = st.sidebar.selectbox(
