@@ -234,7 +234,7 @@ def fn_sim_fr_st():
         dic_sim_cfg['RANDOM_SEED'] = 42 if seed == '固定' else None
 
         st.write('')
-        submitted = st.form_submit_button('開始模擬')
+        submitted = st.form_submit_button('開始模擬', type="primary")
 
         if submitted:
             fn_sim_init()
