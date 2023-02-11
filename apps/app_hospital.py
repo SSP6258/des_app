@@ -430,6 +430,7 @@ def fn_sim_fr_st():
     st.markdown('#### ⏳ $場景: 急診要等多久 ?$')
     global dic_sim_cfg
 
+
     with st.form(key='task'):
         c1, c2, c3, c4 = st.columns([1, 1, 1, 1])
         dic_sim_cfg['TASK_NUM'] = c1.selectbox('幾位急診病患?', range(10, 60, 10), list(range(10, 60, 10)).index(TASK_NUM))
