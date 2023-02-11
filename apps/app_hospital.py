@@ -354,6 +354,7 @@ def fn_sim_result_render(df, capacity, x_typ='linear', show_preempt=True):
         st.write('')
         st.write(dic_sim_cfg)
 
+
 def fn_sim_resource_user(name, env, resource, res_c, wait, prio, proc_time):
     yield env.timeout(wait)
     timeLeft = proc_time
