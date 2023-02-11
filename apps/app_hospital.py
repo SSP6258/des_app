@@ -123,7 +123,8 @@ def fn_gen_plotly_gannt(df, x_s, x_e, y, margin=None, color=None, op=None, title
                              text=f'🚑 {df["task_id"][16]} 到院',
                              showarrow=True,
                              arrowhead=1,
-                             arrowsize=2,)
+                             arrowsize=2,
+                             yshift=10)
 
     fig.update_traces(textposition='outside')
 
