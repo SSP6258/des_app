@@ -118,7 +118,7 @@ def fn_gen_plotly_gannt(df, x_s, x_e, y, margin=None, color=None, op=None, title
 
     st.write(df)
     fig = fig.add_annotation(x=df[x_s][1], y=df[y][1],
-                             text="Arrow",
+                             text=f'{df.index[1]} {df["task_pri"][1]}',
                              showarrow=True,
                              arrowhead=1,
                              arrowsize=2,)
