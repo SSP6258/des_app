@@ -425,9 +425,9 @@ def fn_sim_main():
 
 
 def fn_sim_fr_st():
-    st.title('離散事件模擬器')
-    st.subheader('🏥應用: 急診很忙~ ')
-    st.subheader('⏳ 場景: 急診要等多久 ?')
+    st.markdown('### $離散事件模擬器$')
+    st.markdown('#### 🏥 $應用: 急診很忙~ $')
+    st.markdown('#### ⏳ $場景: 急診要等多久 ?$')
     global dic_sim_cfg
 
     with st.form(key='task'):
