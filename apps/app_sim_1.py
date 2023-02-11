@@ -308,6 +308,7 @@ def fn_sim_result_render():
                 showarrow=True,
                 arrowhead=1)
 
+
     title = '排隊時間分布 箱形圖'
     fig_box = fn_gen_plotly_box(df_gannt, 'wait_time', margin=margin, title=title, y_title="排隊時間(分)",
                                 x_title=f'條件: {dic_sim_cfg["CUSTOMER_NUM"]}位顧客, '
