@@ -116,11 +116,11 @@ def fn_gen_plotly_gannt(df, x_s, x_e, y, margin=None, color=None, op=None, title
     fig = px.timeline(df, x_start=x_s, x_end=x_e, y=y, color=color, text=text, color_continuous_scale='Spectral',
                       template='plotly', opacity=op, hover_data=hover, range_color=range_color)
 
-
     fig = fig.add_annotation(x=x_s[1], y=y[1],
-                text="Text annotation with arrow",
-                showarrow=True,
-                arrowhead=10)
+                             text="Arrow",
+                             showarrow=True,
+                             arrowhead=1,
+                             arrowsize=10,)
 
     fig.update_traces(textposition='outside')
 
