@@ -124,7 +124,7 @@ def fn_gen_plotly_gannt(df, x_s, x_e, y, margin=None, color=None, op=None, title
                              showarrow=False,
                              arrowhead=1,
                              arrowsize=2,
-                             xshift=0)
+                             xshift=-30)
 
     fig.update_traces(textposition='outside')
 
