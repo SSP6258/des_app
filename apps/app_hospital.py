@@ -116,11 +116,7 @@ def fn_gen_plotly_gannt(df, x_s, x_e, y, margin=None, color=None, op=None, title
     fig = px.timeline(df, x_start=x_s, x_end=x_e, y=y, color=color, text=text, color_continuous_scale='Spectral',
                       template='plotly', opacity=op, hover_data=hover, range_color=range_color)
 
-    fig = fig.add_annotation(x=x_s[1], y=y[1],
-                             text="Arrow",
-                             showarrow=True,
-                             arrowhead=1,
-                             arrowsize=10,)
+
 
     fig.update_traces(textposition='outside')
 
@@ -137,6 +133,12 @@ def fn_gen_plotly_gannt(df, x_s, x_e, y, margin=None, color=None, op=None, title
         fig.layout.xaxis.type = 'linear'
         # df['delta'] = df[x_e] - df[x_s]
         fig.data[0].x = df.delta.tolist()
+
+    fig = fig.add_annotation(x=x_s[1], y=y[1],
+                             text="Arrow",
+                             showarrow=True,
+                             arrowhead=1,
+                             arrowsize=10,)
 
     fig.update_layout(margin=margin,
                       title={
