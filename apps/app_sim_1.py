@@ -303,6 +303,11 @@ def fn_sim_result_render():
     fig_gannt = fn_gen_plotly_gannt(df_gannt, 'arrival_time', 'done_time_tick', 'custom_id', margin=margin,
                                     color='wait_time', op=0.8, title='顧客排隊時間 甘特圖', hover=['wait_time'])
 
+    fig_gannt = fig.add_annotation(x=df_gannt['arrival_time'].values[1], y=df_gannt['custom_id'].values[1],
+                text="Text annotation with arrow",
+                showarrow=True,
+                arrowhead=1)
+
     title = '排隊時間分布 箱形圖'
     fig_box = fn_gen_plotly_box(df_gannt, 'wait_time', margin=margin, title=title, y_title="排隊時間(分)",
                                 x_title=f'條件: {dic_sim_cfg["CUSTOMER_NUM"]}位顧客, '
