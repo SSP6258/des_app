@@ -116,9 +116,7 @@ def fn_gen_plotly_gannt(df, x_s, x_e, y, margin=None, color=None, op=None, title
     fig = px.timeline(df, x_start=x_s, x_end=x_e, y=y, color=color, text=text, color_continuous_scale='Spectral',
                       template='plotly', opacity=op, hover_data=hover, range_color=range_color)
 
-    st.write(x_s)
-    st.write(y)
-    fig = fig.add_annotation(x=x_s[2], y=y[2],
+    fig = fig.add_annotation(x=df[x_s][1], y=df[y][1],
                              text="Arrow",
                              showarrow=True,
                              arrowhead=1,
