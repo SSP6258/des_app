@@ -120,7 +120,7 @@ def fn_gen_plotly_gannt(df, x_s, x_e, y, margin=None, color=None, op=None, title
         st.write(df)
 
     fig = fig.add_annotation(x=df[x_s][16], y=df[y][16],
-                             text=f'{df["task_pri"][16]} 到院 🚑',
+                             text=f'🚑 {df["task_id"][16]} 到院',
                              showarrow=True,
                              arrowhead=1,
                              arrowsize=2,)
