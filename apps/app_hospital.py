@@ -120,7 +120,7 @@ def fn_gen_plotly_gannt(df, x_s, x_e, y, margin=None, color=None, op=None, title
     fig = fig.add_annotation(x=x_s[1], y=y[1],
                 text="Text annotation with arrow",
                 showarrow=True,
-                arrowhead=1)
+                arrowhead=10)
 
     fig.update_traces(textposition='outside')
 
