@@ -218,9 +218,9 @@ def fn_sim_main(log=True):
 
 
 def fn_sim_fr_st():
-    st.title('離散事件模擬器')
-    st.subheader('🛒 應用: 請支援收銀~ ')
-    st.subheader('🔊 場景: 全聯福利中心 何時需要廣播 "請支援收銀~" ?')
+    st.markdown('### $離散事件模擬器$')
+    st.markdown('#### 🛒 $應用: 請支援收銀~$ ')
+    st.markdown('#### 🔊 $場景: 全聯福利中心 何時需要廣播$ :red[♪ ♪ ♪ ♪ ‧請 ‧支 ‧援 ‧收 ‧銀~] ?')
     global dic_sim_cfg
 
     with st.form(key='sale1'):
@@ -337,3 +337,4 @@ if __name__ == '__main__':
     fn_sim_init()
     fn_sim_main()
     pprint.pprint(dic_record)
+
