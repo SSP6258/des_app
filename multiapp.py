@@ -51,7 +51,9 @@ class MultiApp:
             '$應用選單$',
             self.apps,
             format_func=lambda app: app['title'],
-            index=1)
+            index=1,
+            label_visibility="collapsed"
+        )
 
         for _ in range(8):
             st.sidebar.write(' ')
