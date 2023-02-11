@@ -303,7 +303,7 @@ def fn_sim_result_render():
     fig_gannt = fn_gen_plotly_gannt(df_gannt, 'arrival_time', 'done_time_tick', 'custom_id', margin=margin,
                                     color='wait_time', op=0.8, title='顧客排隊時間 甘特圖', hover=['wait_time'])
 
-    fig_gannt = fig.add_annotation(x=df_gannt['arrival_time'].values[1], y=df_gannt['custom_id'].values[1],
+    fig_gannt = fig_gannt.add_annotation(x=df_gannt['arrival_time'].values[1], y=df_gannt['custom_id'].values[1],
                 text="Text annotation with arrow",
                 showarrow=True,
                 arrowhead=1)
