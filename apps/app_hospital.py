@@ -345,7 +345,6 @@ def fn_sim_result_render(df, capacity, x_typ='linear', show_preempt=True):
 
     # fig_h.add_trace(go.Box(x=df_h['delta'], name='等待時間(分)', legendgroup=2), row=2, col=1)
 
-
     # =========== Rendering Here ===========
 
     st.write(
@@ -355,7 +354,6 @@ def fn_sim_result_render(df, capacity, x_typ='linear', show_preempt=True):
     cols = st.columns([1, 1])
     cols[0].plotly_chart(fig_q, use_container_width=True)
     cols[1].plotly_chart(fig_h, use_container_width=True)
-
 
     with st.expander('檢視詳細資料'):
         st.write('')
