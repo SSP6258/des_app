@@ -295,14 +295,14 @@ def fn_sim_result_render(df, capacity, x_typ='linear', show_preempt=True):
 
     fig_q = make_subplots(rows=2, cols=1,
                           subplot_titles=(f'病患到院時間分布', f'急診候診人數分布 👉 最多 {max(y1)} 人'))
-    fig_q = fn_gen_plotly_hist(fig_q, x0, '到院時間', row=1, margin=margin, showlegend=True,
+    fig_q = fn_gen_plotly_hist(fig_q, x0, '到院時間', row=1, margin=margin, showlegend=False,
                                legendgroup=1, xaxis_range=x_range)
     if x_typ == 'time':
         fig_q.update_xaxes(tickformat="%H:%M")
 
     fig_q = fn_gen_plotly_scatter(fig_q, x1, y1, margin=margin, row=2, color='red', size=10, opacity=0.5,
                                   line_shape='hv',
-                                  mode='lines', name='候診人數', legend=True, legendgroup='2', xaxis_range=x_range)
+                                  mode='lines', name='候診人數', legend=False, legendgroup='2', xaxis_range=x_range)
 
     if show_preempt:
         p_ticks = df[df['status'] == 'preempted']['tick'].values
@@ -334,7 +334,7 @@ def fn_sim_result_render(df, capacity, x_typ='linear', show_preempt=True):
     for p in sorted(df_h['prio'].unique(), reverse=False):
         df_p = df_h[df_h['prio'] == p]
         fig_h = fn_gen_plotly_hist(fig_h, df_p['delta'], f'{int(p)}級', row=1, col=1, margin=margin,
-                                   showlegend=True,
+                                   showlegend=False,
                                    legendgroup=1, bingroup=1, barmode='stack', color=cols[c])
 
         fig_h.add_trace(go.Box(x=df_p['delta'], name=f'{int(p)}級', legendgroup=2, marker=dict(color=cols[c]), showlegend=False), row=2, col=1)
