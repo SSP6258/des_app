@@ -355,6 +355,7 @@ def fn_sim_result_render(df, capacity, x_typ='linear', show_preempt=True):
     cols[0].plotly_chart(fig_q, use_container_width=True)
     cols[0].plotly_chart(fig_h, use_container_width=True)
 
+
     with st.expander('檢視詳細資料'):
         st.write('')
         AgGrid(df, theme='blue')
