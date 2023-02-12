@@ -352,8 +352,9 @@ def fn_sim_result_render(df, capacity, x_typ='linear', show_preempt=True):
         '-  🚑  [$台灣醫院 急診 檢傷分級: 1.復甦急救 > 2.危急 > 3.緊急 > 4.次緊急 > 5.非緊急$](https://www.mgems.org/index.php/zh/question-answer/hospital-ems-triage)')
 
     st.plotly_chart(fig, use_container_width=True)
-    st.plotly_chart(fig_q, use_container_width=True)
-    st.plotly_chart(fig_h, use_container_width=True)
+    cols = st.columns([1, 1])
+    cols[0].plotly_chart(fig_q, use_container_width=True)
+    cols[1].plotly_chart(fig_h, use_container_width=True)
 
     with st.expander('檢視詳細資料'):
         st.write('')
